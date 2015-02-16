@@ -15,7 +15,6 @@
 {%- for name, entity in entities %}
 
         var {{ name }} = new Entity('{{ name }}')
-            .label('{{ name }}')
             .pagination(pagination)
             .dashboard(10)
     {% for field in entity.fieldMappings %}
@@ -25,7 +24,7 @@
 {% endfor -%}
 
 {%- verbatim %}
-        var app = new Application('ng-admin backend demo')
+        var app = new Application()
             .baseApiUrl('./api/')
 {% endverbatim %}
 

@@ -12,7 +12,6 @@
         }
 
         var post = new Entity('post')
-            .label('post')
             .pagination(pagination)
             .dashboard(10)
             .addField(new Field('id').type('integer'))
@@ -21,7 +20,6 @@
         ;
 
         var comment = new Entity('comment')
-            .label('comment')
             .pagination(pagination)
             .dashboard(10)
             .addField(new Field('id').type('integer'))
