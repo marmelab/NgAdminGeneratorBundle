@@ -15,7 +15,7 @@ class GenerateConfigurationCommand extends ContainerAwareCommand
     {
         $this
             ->setName('ng-admin:configuration:generate')
-            ->setDescription('Generate a ng-admin valid configuration based on configured REST API');
+            ->setDescription('Generate a ng-admin valid configuration based on configured REST APgI');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -23,34 +23,18 @@ class GenerateConfigurationCommand extends ContainerAwareCommand
         $this->output = $output;
 
         $container = $this->getContainer();
+        $configurationGenerator = $container->get('marmelab.ng_admin_generator.configuration_generator');
         $entityConfigurationRetriever = $container->get('marmelab.ng_admin_generator.entity_configuration_retriever');
 
+        $entities = [];
         $restRegistry = $container->get('lemon_rest.object_registry');
         foreach ($restRegistry->getClasses() as $entityClassName) {
-            $this->debug(sprintf('Entity found: <info>%s</info>', $entityClassName));
+            $classNameParts = explode('\\', $entityClassName);
+            $varName = lcfirst(end($classNameParts));
 
-            $configuration = $entityConfigurationRetriever->retrieveEntityConfiguration($entityClassName);
-            $this->showDebugConfiguration($configuration);
-        }
-    }
-
-    private function debug($message)
-    {
-        if ($this->output->getVerbosity() < OutputInterface::VERBOSITY_VERY_VERBOSE) {
-            return;
+            $entities[$varName] = $entityConfigurationRetriever->retrieveEntityConfiguration($entityClassName);
         }
 
-        $this->output->writeln($message);
-    }
-
-    private function showDebugConfiguration($configuration)
-    {
-        if ($this->output->getVerbosity() < OutputInterface::VERBOSITY_VERY_VERBOSE) {
-            return;
-        }
-
-        foreach ($configuration as $field) {
-            $this->output->writeln(sprintf('  * Field <info>%s</info>: type => %s', $field['name'], $field['type']));
-        }
+        $output->writeln($configurationGenerator->generateConfiguration($entities));
     }
 }

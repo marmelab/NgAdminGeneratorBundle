@@ -1,0 +1,37 @@
+{% verbatim %}(function() {
+    "use strict";
+
+    var app = angular.module('myApp', ['ng-admin']);
+
+    app.config(function(NgAdminConfigurationProvider, Application, Entity, Field, Reference, ReferencedList, ReferenceMany) {
+        function pagination(page, maxPerPage) {
+            return {
+                _offset: (page - 1) * maxPerPage,
+                _limit: maxPerPage
+            };
+        }
+
+{% endverbatim -%}
+
+{%- for name, fields in entities %}
+        var {{ name }} = new Entity(name)
+    {% for field in fields %}
+        .addField(new Field('{{ field.name }}').type('{{ field.type }}')
+    {% endfor %}
+    ;
+{% endfor -%}
+
+{%- verbatim %}
+        var app = new Application('ng-admin backend demo')
+            .baseApiUrl('./api/')
+{% endverbatim %}
+
+{%- for name, fields in entities %}
+            .addEntity({{ name }}){{ loop.last ? ":" : "" }}
+{% endfor -%}
+
+{%- verbatim %}
+        NgAdminConfigurationProvider.configure(app);
+    })
+})();
+{% endverbatim %}

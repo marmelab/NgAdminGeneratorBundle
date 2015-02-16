@@ -3,3 +3,8 @@ services:
         class: marmelab\NgAdminGeneratorBundle\Retriever\EntityConfigurationRetriever
         arguments:
             - @doctrine.orm.entity_manager
+
+    marmelab.ng_admin_generator.configuration_generator:
+        class: marmelab\NgAdminGeneratorBundle\Generator\ConfigurationGenerator
+        arguments:
+            - @twig
