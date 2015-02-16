@@ -14,21 +14,21 @@
         var post = new Entity('post')
             .pagination(pagination)
             .dashboard(10)
-            .addField(new Field('id').type('integer'))
             .addField(new Field('title').type('string'))
             .addField(new Field('body').type('text'))
+            .addField(new Field('id').type('integer'))
         ;
 
         var comment = new Entity('comment')
             .pagination(pagination)
             .dashboard(10)
-            .addField(new Field('id').type('integer'))
+            .addField(new Field('postId').type('integer'))
             .addField(new Field('body').type('text'))
-            .addField(new Field('created_at').type('date'))
-            .addField(new Field('post_id').type('integer'))
+            .addField(new Field('createdAt').type('date'))
+            .addField(new Field('id').type('integer'))
         ;
 
-        var app = new Application('ng-admin backend demo')
+        var app = new Application()
             .baseApiUrl('./api/')
             .addEntity(post)
             .addEntity(comment);

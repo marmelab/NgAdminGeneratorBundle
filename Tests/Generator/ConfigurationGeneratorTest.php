@@ -2,12 +2,19 @@
 
 namespace marmelab\NgAdminGeneratorBundle\Tests\Generator;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\PDOSqlite\Driver;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use marmelab\NgAdminGeneratorBundle\Generator\ConfigurationGenerator;
 use marmelab\NgAdminGeneratorBundle\Test\Twig\Loader\TwigTestLoader;
 
 class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
 {
+    private $metadataFactory;
+
     public function testGenerateConfiguration()
     {
         $emMock = $this->getMockBuilder('Doctrine\ORM\EntityManager')
@@ -24,55 +31,29 @@ class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $generator = new ConfigurationGenerator($emMock, $twig);
         $this->assertEquals(file_get_contents(__DIR__.'/expected/config.js'), $generator->generateConfiguration([
-           'Acme\FooBundle\Entity\Post',
-           'Acme\FooBundle\Entity\Comment',
+           'Post',
+           'Comment',
         ]));
     }
 
     private function getMetadata($className)
     {
-        $metadata = new ClassMetadata($className);
+        if (!$this->metadataFactory) {
+            $driver = new XmlDriver(__DIR__.'/metadata', '.orm.xml');
 
-        switch ($className) {
-            case 'Acme\FooBundle\Entity\Post':
-                $metadata->fieldMappings = [
-                    'id' => [
-                        'fieldName' => 'id',
-                        'type' => 'integer',
-                    ],
-                    'title' => [
-                        'fieldName' => 'title',
-                        'type' => 'string',
-                    ],
-                    'body' => [
-                        'fieldName' => 'body',
-                        'type' => 'text'
-                    ]
-                ];
-                break;
+            $connection = new Connection([], new Driver());
 
-            case 'Acme\FooBundle\Entity\Comment':
-                $metadata->fieldMappings = [
-                    'id' => [
-                        'fieldName' => 'id',
-                        'type' => 'integer',
-                    ],
-                    'body' => [
-                        'fieldName' => 'body',
-                        'type' => 'text',
-                    ],
-                    'created_at' => [
-                        'fieldName' => 'created_at',
-                        'type' => 'date'
-                    ],
-                    'post_id' => [
-                        'fieldName' => 'post_id',
-                        'type' => 'integer',
-                    ],
-                ];
-                break;
+            $configuration = new Configuration();
+            $configuration->setMetadataDriverImpl($driver);
+            $configuration->setProxyDir(sys_get_temp_dir());
+            $configuration->setProxyNamespace('Foo\Proxy');
+
+            $em = EntityManager::create($connection, $configuration);
+
+            $this->metadataFactory = new DisconnectedClassMetadataFactory();
+            $this->metadataFactory->setEntityManager($em);
         }
 
-        return $metadata;
+        return $this->metadataFactory->getMetadataFor($className);
     }
 }

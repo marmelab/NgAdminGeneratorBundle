@@ -12,7 +12,7 @@ class GenerateConfigurationCommand extends ContainerAwareCommand
     {
         $this
             ->setName('ng-admin:configuration:generate')
-            ->setDescription('Generate a ng-admin valid configuration based on configured REST APgI');
+            ->setDescription('Generate a ng-admin valid configuration based on configured REST API');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
