@@ -2,20 +2,12 @@
     "use strict";
 
     var app = angular.module('myApp', ['ng-admin']);
-    var admin;
-
-    app.config(function (NgAdminConfigurationProvider) {
-        admin = NgAdminConfigurationProvider
-            .application('')
-            .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/');
-    });
 
     {% for entityName, metadata in entities -%}
     app.config(function($provide, NgAdminConfigurationProvider) {
         $provide.factory("{{ entityName|capitalize }}Admin", function() {
             var nga = NgAdminConfigurationProvider;
             var {{ entityName }} = nga.entity('{{ entityName }}');
-            admin.addEntity({{ entityName }});
 
             var {{ entityName }}Fields = [
 {% for field in metadata.fieldMappings %}
@@ -47,6 +39,10 @@
     app.config(function(NgAdminConfigurationProvider, {% for entityName, metadata in entities -%}
         {{ entityName|capitalize }}AdminProvider{{ loop.last ? "" : ", " }}
     {%- endfor %}) {
+        var admin = NgAdminConfigurationProvider
+            .application('')
+            .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/')
+
         admin
         {% for entityName, metadata in entities %}
     .addEntity({{ entityName|capitalize }}AdminProvider.$get())

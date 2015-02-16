@@ -2,19 +2,11 @@
     "use strict";
 
     var app = angular.module('myApp', ['ng-admin']);
-    var admin;
-
-    app.config(function (NgAdminConfigurationProvider) {
-        admin = NgAdminConfigurationProvider
-            .application('')
-            .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/');
-    });
 
     app.config(function($provide, NgAdminConfigurationProvider) {
         $provide.factory("PostAdmin", function() {
             var nga = NgAdminConfigurationProvider;
             var post = nga.entity('post');
-            admin.addEntity(post);
 
             var postFields = [
                 nga.field('title'),
@@ -46,7 +38,6 @@
         $provide.factory("CommentAdmin", function() {
             var nga = NgAdminConfigurationProvider;
             var comment = nga.entity('comment');
-            admin.addEntity(comment);
 
             var commentFields = [
                 nga.field('postId'),
@@ -76,6 +67,10 @@
     });
 
     app.config(function(NgAdminConfigurationProvider, PostAdminProvider, CommentAdminProvider) {
+        var admin = NgAdminConfigurationProvider
+            .application('')
+            .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/')
+
         admin
             .addEntity(PostAdminProvider.$get())
             .addEntity(CommentAdminProvider.$get())

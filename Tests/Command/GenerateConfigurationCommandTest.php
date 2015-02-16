@@ -11,6 +11,6 @@ class GenerateConfigurationCommandTest extends AbstractCommandTestCase
         $client = self::createClient();
         $output = $this->runCommand($client, 'ng-admin:configuration:generate');
 
-        $this->assertContains('nga.configure(app);', $output);
+        $this->assertContains('NgAdminConfigurationProvider.configure(admin);', $output);
     }
 }
