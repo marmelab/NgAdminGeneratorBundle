@@ -3,36 +3,64 @@
 
     var app = angular.module('myApp', ['ng-admin']);
 
-    app.config(function(NgAdminConfigurationProvider, Application, Entity, Field, Reference, ReferencedList, ReferenceMany) {
-        function pagination(page, maxPerPage) {
-            return {
-                _offset: (page - 1) * maxPerPage,
-                _limit: maxPerPage
-            };
-        }
+    app.config(function (NgAdminConfigurationProvider) {
+        var nga = NgAdminConfigurationProvider;
+        var app = nga.application('')
+            .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/');
 
-        var post = new Entity('post')
-            .pagination(pagination)
-            .dashboard(10)
-            .addField(new Field('title').type('string'))
-            .addField(new Field('body').type('text'))
-            .addField(new Field('id').type('integer'))
-        ;
+        /** Post **/
+        var post = nga.entity('post');
+        app.addEntity(post);
 
-        var comment = new Entity('comment')
-            .pagination(pagination)
-            .dashboard(10)
-            .addField(new Field('postId').type('integer'))
-            .addField(new Field('body').type('text'))
-            .addField(new Field('createdAt').type('date'))
-            .addField(new Field('id').type('integer'))
-        ;
+        var postFields = [
+            nga.field('title'),
+            nga.field('body'),
+            nga.field('id')
+        ];
 
-        var app = new Application()
-            .baseApiUrl('./api/')
-            .addEntity(post)
-            .addEntity(comment);
+        post.dashboardView()
+            .fields(postFields);
 
-        NgAdminConfigurationProvider.configure(app);
-    })
+        post.listView()
+            .fields(postFields)
+            .listActions(['show', 'edit', 'delete']);
+
+        post.creationView()
+            .fields(postFields);
+
+        post.editionView()
+            .fields(postFields);
+
+        post.showView()
+            .fields(postFields);
+
+        /** Comment **/
+        var comment = nga.entity('comment');
+        app.addEntity(comment);
+
+        var commentFields = [
+            nga.field('postId'),
+            nga.field('body'),
+            nga.field('createdAt'),
+            nga.field('id')
+        ];
+
+        comment.dashboardView()
+            .fields(commentFields);
+
+        comment.listView()
+            .fields(commentFields)
+            .listActions(['show', 'edit', 'delete']);
+
+        comment.creationView()
+            .fields(commentFields);
+
+        comment.editionView()
+            .fields(commentFields);
+
+        comment.showView()
+            .fields(commentFields);
+
+        nga.configure(app);
+    });
 })();
