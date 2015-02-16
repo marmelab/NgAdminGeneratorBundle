@@ -1,0 +1,6 @@
+services:
+    marmelab.ng_admin_generator.configuration_generator:
+        class: marmelab\NgAdminGeneratorBundle\Generator\ConfigurationGenerator
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @twig
