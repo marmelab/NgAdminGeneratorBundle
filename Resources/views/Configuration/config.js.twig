@@ -1,42 +1,58 @@
-{% verbatim %}(function() {
+(function() {
     "use strict";
 
     var app = angular.module('myApp', ['ng-admin']);
+    var admin;
 
     app.config(function (NgAdminConfigurationProvider) {
-        var nga = NgAdminConfigurationProvider;
-        var app = nga.application('')
+        admin = NgAdminConfigurationProvider
+            .application('')
             .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/');
-{% endverbatim -%}
+    });
 
-{%- for entityName, metadata in entities %}
+    {% for entityName, metadata in entities -%}
+    app.config(function($provide, NgAdminConfigurationProvider) {
+        $provide.factory("{{ entityName|capitalize }}Admin", function() {
+            var nga = NgAdminConfigurationProvider;
+            var {{ entityName }} = nga.entity('{{ entityName }}');
+            admin.addEntity({{ entityName }});
 
-        /** {{ entityName|capitalize }} **/
-        var {{ entityName }} = nga.entity('{{ entityName }}');
-        app.addEntity({{ entityName }});
-
-        var {{ entityName }}Fields = [
-{% for field in metadata.fieldMappings %}            nga.field('{{ field.fieldName }}'){{ loop.last ? '' : ',' }}
+            var {{ entityName }}Fields = [
+{% for field in metadata.fieldMappings %}
+                nga.field('{{ field.fieldName }}'){{ loop.last ? "" : "," }}
 {% endfor %}
-        ];
+            ];
 
-        {{ entityName }}.dashboardView()
-            .fields({{ entityName }}Fields);
+            {{ entityName }}.dashboardView()
+                .fields({{ entityName }}Fields);
 
-        {{ entityName }}.listView()
-            .fields({{ entityName }}Fields)
-            .listActions(['show', 'edit', 'delete']);
+            {{ entityName }}.listView()
+                .fields({{ entityName }}Fields)
+                .listActions(['show', 'edit', 'delete']);
 
-        {{ entityName }}.creationView()
-            .fields({{ entityName }}Fields);
+            {{ entityName }}.creationView()
+                .fields({{ entityName }}Fields);
 
-        {{ entityName }}.editionView()
-            .fields({{ entityName }}Fields);
+            {{ entityName }}.editionView()
+                .fields({{ entityName }}Fields);
 
-        {{ entityName }}.showView()
-            .fields({{ entityName }}Fields);
-{% endfor %}
+            {{ entityName }}.showView()
+                .fields({{ entityName }}Fields);
 
-        nga.configure(app);
+            return {{ entityName }};
+        });
+    });
+
+    {% endfor -%}
+    app.config(function(NgAdminConfigurationProvider, {% for entityName, metadata in entities -%}
+        {{ entityName|capitalize }}AdminProvider{{ loop.last ? "" : ", " }}
+    {%- endfor %}) {
+        admin
+        {% for entityName, metadata in entities %}
+    .addEntity({{ entityName|capitalize }}AdminProvider.$get())
+        {% endfor %}
+;
+
+        NgAdminConfigurationProvider.configure(admin);
     });
 })();
