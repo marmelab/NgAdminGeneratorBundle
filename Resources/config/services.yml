@@ -1,6 +1,7 @@
 services:
     marmelab.ng_admin_generator.entity_configuration_retriever:
         class: marmelab\NgAdminGeneratorBundle\Retriever\EntityConfigurationRetriever
+        public: false
         arguments:
             - @doctrine.orm.entity_manager
 
