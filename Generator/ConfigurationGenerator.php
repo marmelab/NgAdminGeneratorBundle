@@ -2,16 +2,16 @@
 
 namespace marmelab\NgAdminGeneratorBundle\Generator;
 
-use marmelab\NgAdminGeneratorBundle\Retriever\EntityConfigurationRetriever;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ConfigurationGenerator
 {
-    private $retriever;
+    private $em;
     private $twig;
 
-    public function __construct(EntityConfigurationRetriever $retriever, \Twig_Environment $twig)
+    public function __construct(EntityManagerInterface $em, \Twig_Environment $twig)
     {
-        $this->retriever = $retriever;
+        $this->em = $em;
         $this->twig = $twig;
     }
 
@@ -21,7 +21,8 @@ class ConfigurationGenerator
         foreach ($classNames as $className) {
             $classNameParts = explode('\\', $className);
             $varName = lcfirst(end($classNameParts));
-            $entities[$varName] = $this->retriever->retrieveEntityConfiguration($className);
+
+            $entities[$varName] = $this->em->getClassMetadata($className);
         }
 
         return $this->twig->render('marmelabNgAdminGeneratorBundle:Configuration:config.js.twig', compact('entities'));

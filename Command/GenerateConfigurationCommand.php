@@ -8,9 +8,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateConfigurationCommand extends ContainerAwareCommand
 {
-    /** @var OutputInterface */
-    private $output;
-
     protected function configure()
     {
         $this
@@ -20,8 +17,6 @@ class GenerateConfigurationCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->output = $output;
-
         $container = $this->getContainer();
         $restRegistry = $container->get('lemon_rest.object_registry');
         $configurationGenerator = $container->get('marmelab.ng_admin_generator.configuration_generator');
