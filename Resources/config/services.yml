@@ -7,4 +7,5 @@ services:
     marmelab.ng_admin_generator.configuration_generator:
         class: marmelab\NgAdminGeneratorBundle\Generator\ConfigurationGenerator
         arguments:
+            - @marmelab.ng_admin_generator.entity_configuration_retriever
             - @twig

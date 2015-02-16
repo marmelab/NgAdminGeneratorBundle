@@ -10,13 +10,16 @@
                 _limit: maxPerPage
             };
         }
-
 {% endverbatim -%}
 
 {%- for name, fields in entities %}
-        var {{ name }} = new Entity(name)
+
+        var {{ name }} = new Entity('{{ name }}')
+            .label('{{ name }}')
+            .pagination(pagination)
+            .dashboard(10)
     {% for field in fields %}
-        .addField(new Field('{{ field.name }}').type('{{ field.type }}')
+        .addField(new Field('{{ field.name }}').type('{{ field.type }}'))
     {% endfor %}
     ;
 {% endfor -%}
@@ -27,11 +30,11 @@
 {% endverbatim %}
 
 {%- for name, fields in entities %}
-            .addEntity({{ name }}){{ loop.last ? ":" : "" }}
+            .addEntity({{ name }}){{ loop.last ? ";" : "" }}
 {% endfor -%}
 
 {%- verbatim %}
         NgAdminConfigurationProvider.configure(app);
     })
 })();
-{% endverbatim %}
+{% endverbatim -%}

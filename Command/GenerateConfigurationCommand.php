@@ -23,18 +23,9 @@ class GenerateConfigurationCommand extends ContainerAwareCommand
         $this->output = $output;
 
         $container = $this->getContainer();
-        $configurationGenerator = $container->get('marmelab.ng_admin_generator.configuration_generator');
-        $entityConfigurationRetriever = $container->get('marmelab.ng_admin_generator.entity_configuration_retriever');
-
-        $entities = [];
         $restRegistry = $container->get('lemon_rest.object_registry');
-        foreach ($restRegistry->getClasses() as $entityClassName) {
-            $classNameParts = explode('\\', $entityClassName);
-            $varName = lcfirst(end($classNameParts));
+        $configurationGenerator = $container->get('marmelab.ng_admin_generator.configuration_generator');
 
-            $entities[$varName] = $entityConfigurationRetriever->retrieveEntityConfiguration($entityClassName);
-        }
-
-        $output->writeln($configurationGenerator->generateConfiguration($entities));
+        $output->writeln($configurationGenerator->generateConfiguration($restRegistry->getClasses()));
     }
 }
