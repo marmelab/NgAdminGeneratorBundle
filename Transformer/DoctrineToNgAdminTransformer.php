@@ -25,16 +25,57 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
 
     public function transform($doctrineMetadata)
     {
-        return array_map(function($fieldMapping) {
-            return [
+        $transformedFields = [];
+        $joinColumns = $this->getJoinColumns($doctrineMetadata);
+
+        foreach ($doctrineMetadata->fieldMappings as $fieldMapping) {
+            $field = [
                 'name' => $fieldMapping['fieldName'],
-                'type' => self::$typeMapping[$fieldMapping['type']],
             ];
-        }, $doctrineMetadata->fieldMappings);
+
+            // if field is not in any relationship...
+            if (!in_array($field['name'], array_keys($joinColumns))) {
+                $field['type'] = self::$typeMapping[$fieldMapping['type']];
+                $transformedFields[] = $field;
+                continue;
+            }
+
+            $field['type'] = 'reference';
+            $field = array_merge($field, $joinColumns[$field['name']]);
+
+            $transformedFields[] = $field;
+        }
+
+        return $transformedFields;
     }
 
     public function reverseTransform($ngAdminConfiguration)
     {
         throw new \DomainException("You shouldn't need to transform a ng-admin configuration into a Doctrine mapping.");
+    }
+
+    private function getJoinColumns($metadata)
+    {
+        $joinColumns = [];
+        foreach ($metadata->associationMappings as $mappedEntity => $mapping) {
+            // add link from owner entity, not for inverse relationship
+            if (!$mapping['isOwningSide']) {
+                continue;
+            }
+
+            // single relationship, through joinColumns
+            if (isset($mapping['joinColumns'])) {
+                $column = $mapping['joinColumns'][0];
+                $joinColumns[$column['name']] = [
+                    'name' => $column['name'],
+                    'referencedEntity' => $mappedEntity,
+                    'referencedField' => $column['referencedColumnName']
+                ];
+            }
+
+            // many-to-many relationship, through a joinTable
+        }
+
+        return $joinColumns;
     }
 }
