@@ -1,0 +1,10 @@
+                nga.field('{{ field.name }}', '{{ field.type }}')
+                    .targetEntity(nga.entity('{{ field.mappedBy }}'))
+                    .targetReferenceField('{{ field.referencedField }}')
+                    .targetFields([
+{% for field in entities[field.referencedEntity] %}
+{%- if field.type != 'reference' and field.type != 'referenced_list' %}
+                        nga.field('{{ field.name }}', '{{ field.type }}'){{ loop.last ? "" : "," }}
+{% endif %}
+{% endfor %}
+                    ])

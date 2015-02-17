@@ -15,7 +15,9 @@
                 nga.field('{{ field.name }}', '{{ field.type }}')
                     .targetEntity(nga.entity('{{ field.referencedEntity }}'))
                     .targetField(nga.field('{{ field.referencedField }}'))
-    {%- else %}
+    {%- elseif field.type == 'referenced_list' %}
+                {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:referenced_list.js.twig" %}{% endspaceless %}
+    {% else %}
                 nga.field('{{ field.name }}', '{{ field.type }}')
     {%- endif %}{{ loop.last ? "" : "," }}
 {% endfor %}

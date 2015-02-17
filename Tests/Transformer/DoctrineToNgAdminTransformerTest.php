@@ -6,23 +6,28 @@ use marmelab\NgAdminGeneratorBundle\Transformer\DoctrineToNgAdminTransformer;
 
 class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var DoctrineToNgAdminTransformer */
     private $transformer;
+
+    private $doctrineMetadataMock;
 
     public function setUp()
     {
         $this->transformer = new DoctrineToNgAdminTransformer();
+        $this->doctrineMetadataMock = new \StdClass();
+        $this->doctrineMetadataMock->name = 'Acme\FooBundle\Entity\Comment';
+        $this->doctrineMetadataMock->associationMappings = [];
+        $this->doctrineMetadataMock->fieldMappings = [];
     }
 
     public function testShouldTransformInputDataIntoExpectedFormat()
     {
-        $doctrineMetadata = new \StdClass();
-        $doctrineMetadata->associationMappings = [];
-        $doctrineMetadata->fieldMappings = [
+        $this->doctrineMetadataMock->fieldMappings = [
             ['fieldName' => 'title', 'type' => 'string'],
             ['fieldName' => 'body', 'type' => 'text']
         ];
 
-        $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
         $this->assertEquals([
             ['name' => 'title', 'type' => 'string'],
@@ -33,11 +38,8 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
     /** @dataProvider nonReferenceTypeProvider */
     public function testShouldTransformDoctrineNonReferentialTypesIntoCorrectNgAdminTypes($doctrineType, $expectedNgAdminType)
     {
-        $doctrineMetadata = new \StdClass();
-        $doctrineMetadata->associationMappings = [];
-        $doctrineMetadata->fieldMappings = [['fieldName' => 'myField', 'type' => $doctrineType]];
-
-        $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
+        $this->doctrineMetadataMock->fieldMappings = [['fieldName' => 'myField', 'type' => $doctrineType]];
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
         $this->assertEquals($expectedNgAdminType, $ngAdminConfiguration[0]['type']);
     }
@@ -63,9 +65,8 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldTransformDoctrineReferentialFieldsIntoCorrectNgAdminType()
     {
-        $doctrineMetadata = new \StdClass();
-        $doctrineMetadata->fieldMappings = [['fieldName' => 'post_id']];
-        $doctrineMetadata->associationMappings = [
+        $this->doctrineMetadataMock->fieldMappings = [['fieldName' => 'post_id']];
+        $this->doctrineMetadataMock->associationMappings = [
             'post' => [
                 'fieldName' => 'post_id',
                 'isOwningSide' => true,
@@ -75,25 +76,31 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
         $this->assertEquals([
             ['name' => 'post_id', 'type' => 'reference', 'referencedField' => 'id', 'referencedEntity' => 'post'],
         ], $ngAdminConfiguration);
     }
 
-    public function testShouldNotTransformNotOwnedRelationshipToReferenceField()
+    public function testShouldTransformNotOwnedRelationshipToReferencedListField()
     {
-        $doctrineMetadata = new \StdClass();
-        $doctrineMetadata->fieldMappings = [['fieldName' => 'post_id', 'type' => 'integer']];
-        $doctrineMetadata->associationMappings = [
-            'comments' => [ 'isOwningSide' => false ],
+        $this->doctrineMetadataMock->associationMappings = [
+            'comments' => [
+                'isOwningSide' => false,
+                'sourceEntity' => 'Acme\FooBundle\Entity\Comment',
+                'mappedBy' => 'comments',
+            ],
         ];
 
-        $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
-        $this->assertEquals([
-            ['name' => 'post_id', 'type' => 'number'],
-        ], $ngAdminConfiguration);
+        $this->assertEquals([[
+            'name' => 'comments',
+            'referencedEntity' => 'comment',
+            'referencedField'=> 'post_id',
+            'mappedBy' => 'comments',
+            'type' => 'referenced_list',
+        ]], $ngAdminConfiguration);
     }
 }
