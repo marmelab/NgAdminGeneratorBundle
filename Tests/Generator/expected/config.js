@@ -3,36 +3,79 @@
 
     var app = angular.module('myApp', ['ng-admin']);
 
-    app.config(function(NgAdminConfigurationProvider, Application, Entity, Field, Reference, ReferencedList, ReferenceMany) {
-        function pagination(page, maxPerPage) {
-            return {
-                _offset: (page - 1) * maxPerPage,
-                _limit: maxPerPage
-            };
-        }
+    app.config(function($provide, NgAdminConfigurationProvider) {
+        $provide.factory("PostAdmin", function() {
+            var nga = NgAdminConfigurationProvider;
+            var post = nga.entity('post');
 
-        var post = new Entity('post')
-            .pagination(pagination)
-            .dashboard(10)
-            .addField(new Field('title').type('string'))
-            .addField(new Field('body').type('text'))
-            .addField(new Field('id').type('integer'))
+            var postFields = [
+                nga.field('title'),
+                nga.field('body'),
+                nga.field('id')
+            ];
+
+            post.dashboardView()
+                .fields(postFields);
+
+            post.listView()
+                .fields(postFields)
+                .listActions(['show', 'edit', 'delete']);
+
+            post.creationView()
+                .fields(postFields);
+
+            post.editionView()
+                .fields(postFields);
+
+            post.showView()
+                .fields(postFields);
+
+            return post;
+        });
+    });
+
+    app.config(function($provide, NgAdminConfigurationProvider) {
+        $provide.factory("CommentAdmin", function() {
+            var nga = NgAdminConfigurationProvider;
+            var comment = nga.entity('comment');
+
+            var commentFields = [
+                nga.field('postId'),
+                nga.field('body'),
+                nga.field('createdAt'),
+                nga.field('id')
+            ];
+
+            comment.dashboardView()
+                .fields(commentFields);
+
+            comment.listView()
+                .fields(commentFields)
+                .listActions(['show', 'edit', 'delete']);
+
+            comment.creationView()
+                .fields(commentFields);
+
+            comment.editionView()
+                .fields(commentFields);
+
+            comment.showView()
+                .fields(commentFields);
+
+            return comment;
+        });
+    });
+
+    app.config(function(NgAdminConfigurationProvider, PostAdminProvider, CommentAdminProvider) {
+        var admin = NgAdminConfigurationProvider
+            .application('')
+            .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/')
+
+        admin
+            .addEntity(PostAdminProvider.$get())
+            .addEntity(CommentAdminProvider.$get())
         ;
 
-        var comment = new Entity('comment')
-            .pagination(pagination)
-            .dashboard(10)
-            .addField(new Field('postId').type('integer'))
-            .addField(new Field('body').type('text'))
-            .addField(new Field('createdAt').type('date'))
-            .addField(new Field('id').type('integer'))
-        ;
-
-        var app = new Application()
-            .baseApiUrl('./api/')
-            .addEntity(post)
-            .addEntity(comment);
-
-        NgAdminConfigurationProvider.configure(app);
-    })
+        NgAdminConfigurationProvider.configure(admin);
+    });
 })();

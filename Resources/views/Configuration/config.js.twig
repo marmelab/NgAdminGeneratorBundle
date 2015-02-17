@@ -1,39 +1,54 @@
-{% verbatim %}(function() {
+(function() {
     "use strict";
 
     var app = angular.module('myApp', ['ng-admin']);
 
-    app.config(function(NgAdminConfigurationProvider, Application, Entity, Field, Reference, ReferencedList, ReferenceMany) {
-        function pagination(page, maxPerPage) {
-            return {
-                _offset: (page - 1) * maxPerPage,
-                _limit: maxPerPage
-            };
-        }
-{% endverbatim -%}
+    {% for entityName, metadata in entities -%}
+    app.config(function($provide, NgAdminConfigurationProvider) {
+        $provide.factory("{{ entityName|capitalize }}Admin", function() {
+            var nga = NgAdminConfigurationProvider;
+            var {{ entityName }} = nga.entity('{{ entityName }}');
 
-{%- for name, entity in entities %}
+            var {{ entityName }}Fields = [
+{% for field in metadata.fieldMappings %}
+                nga.field('{{ field.fieldName }}'){{ loop.last ? "" : "," }}
+{% endfor %}
+            ];
 
-        var {{ name }} = new Entity('{{ name }}')
-            .pagination(pagination)
-            .dashboard(10)
-    {% for field in entity.fieldMappings %}
-        .addField(new Field('{{ field.fieldName }}').type('{{ field.type }}'))
-    {% endfor %}
-    ;
-{% endfor -%}
+            {{ entityName }}.dashboardView()
+                .fields({{ entityName }}Fields);
 
-{%- verbatim %}
-        var app = new Application()
-            .baseApiUrl('./api/')
-{% endverbatim %}
+            {{ entityName }}.listView()
+                .fields({{ entityName }}Fields)
+                .listActions(['show', 'edit', 'delete']);
 
-{%- for name, fields in entities %}
-            .addEntity({{ name }}){{ loop.last ? ";" : "" }}
-{% endfor -%}
+            {{ entityName }}.creationView()
+                .fields({{ entityName }}Fields);
 
-{%- verbatim %}
-        NgAdminConfigurationProvider.configure(app);
-    })
+            {{ entityName }}.editionView()
+                .fields({{ entityName }}Fields);
+
+            {{ entityName }}.showView()
+                .fields({{ entityName }}Fields);
+
+            return {{ entityName }};
+        });
+    });
+
+    {% endfor -%}
+    app.config(function(NgAdminConfigurationProvider, {% for entityName, metadata in entities -%}
+        {{ entityName|capitalize }}AdminProvider{{ loop.last ? "" : ", " }}
+    {%- endfor %}) {
+        var admin = NgAdminConfigurationProvider
+            .application('')
+            .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/')
+
+        admin
+        {% for entityName, metadata in entities %}
+    .addEntity({{ entityName|capitalize }}AdminProvider.$get())
+        {% endfor %}
+;
+
+        NgAdminConfigurationProvider.configure(admin);
+    });
 })();
-{% endverbatim -%}
