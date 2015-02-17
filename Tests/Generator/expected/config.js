@@ -11,6 +11,14 @@
             var postFields = [
                 nga.field('title', 'string'),
                 nga.field('body', 'text'),
+                nga.field('comments', 'referenced_list')
+                    .targetEntity(nga.entity('comment'))
+                    .targetReferenceField('post_id')
+                    .targetFields([
+                        nga.field('id', 'number'),
+                        nga.field('body', 'text'),
+                        nga.field('created_at', 'date')
+                    ]),
                 nga.field('id', 'number')
             ];
 

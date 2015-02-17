@@ -46,6 +46,14 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
             $transformedFields[] = $field;
         }
 
+        // check for inversed relationships
+        $inversedRelationships = $this->getInversedRelationships($doctrineMetadata);
+        if (isset($inversedRelationships[$doctrineMetadata->name])) {
+            $transformedFields[] = array_merge([
+                'type' => 'referenced_list',
+            ], $inversedRelationships[$doctrineMetadata->name]);
+        }
+
         return $transformedFields;
     }
 
@@ -58,7 +66,7 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
     {
         $joinColumns = [];
         foreach ($metadata->associationMappings as $mappedEntity => $mapping) {
-            // add link from owner entity, not for inverse relationship
+            // should own property, otherwise it's inversed relationship
             if (!$mapping['isOwningSide']) {
                 continue;
             }
@@ -77,5 +85,26 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
         }
 
         return $joinColumns;
+    }
+
+    private function getInversedRelationships($metadata)
+    {
+        $inversedRelationships = [];
+        foreach ($metadata->associationMappings as $mappedEntity => $mapping) {
+            // should own property, otherwise it's direct relationship
+            if ($mapping['isOwningSide']) {
+                continue;
+            }
+
+            // single relationship, through joinColumns
+            $inversedRelationships[$mapping['sourceEntity']] = [
+                'name' => $mappedEntity,
+                'referencedEntity' => 'comment',
+                'referencedField'=> 'post_id',
+                'mappedBy' => $mapping['mappedBy']
+            ];
+        }
+
+        return $inversedRelationships;
     }
 }
