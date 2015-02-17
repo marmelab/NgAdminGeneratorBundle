@@ -40,9 +40,9 @@
             var comment = nga.entity('comment');
 
             var commentFields = [
-                nga.field('postId', 'number'),
                 nga.field('body', 'text'),
-                nga.field('createdAt', 'date'),
+                nga.field('created_at', 'date'),
+                nga.field('post_id', 'number'),
                 nga.field('id', 'number')
             ];
 
