@@ -1,11 +1,11 @@
 {% for field in fields %}
-    {%- if field.type == 'reference' %}
-        nga.field('{{ field.name }}', '{{ field.type }}')
-            .targetEntity(nga.entity('{{ field.referencedEntity }}'))
-            .targetField(nga.field('{{ field.referencedField }}'))
+    {% if field.type == 'reference' %}
+            {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:reference.js.twig" %}{% endspaceless %}
     {% elseif field.type == 'referenced_list' %}
-        {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:referenced_list.js.twig" %}{% endspaceless %}
-    {% else %}
-        nga.field('{{ field.name }}', '{{ field.type }}')
+            {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:referenced_list.js.twig" %}{% endspaceless %}
+    {% elseif field.type == 'reference_many' %}
+            {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:reference_many.js.twig" %}{% endspaceless %}
+    {%- else %}
+            nga.field('{{ field.name }}', '{{ field.type }}')
     {%- endif %}{{ loop.last ? "" : "," }}
 {% endfor %}

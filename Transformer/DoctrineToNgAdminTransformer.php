@@ -2,6 +2,7 @@
 
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
+use Doctrine\Common\Util\Inflector;
 use Symfony\Component\Form\DataTransformerInterface;
 
 class DoctrineToNgAdminTransformer implements DataTransformerInterface
@@ -27,33 +28,30 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
 
     public function transform($doctrineMetadata)
     {
-        $transformedFields = [];
         $joinColumns = $this->getJoinColumns($doctrineMetadata);
 
+        $transformedFields = [];
         foreach ($doctrineMetadata->fieldMappings as $fieldMapping) {
             $field = [
                 'name' => $fieldMapping['fieldName'],
             ];
 
-            // if field is not in any relationship...
-            if (!in_array($field['name'], array_keys($joinColumns))) {
-                $field['type'] = self::$typeMapping[$fieldMapping['type']];
-                $transformedFields[] = $field;
+            // if field is in relationship, we'll deal it later
+            if (in_array($field['name'], array_keys($joinColumns))) {
                 continue;
             }
 
-            $field['type'] = 'reference';
-            $field = array_merge($field, $joinColumns[$field['name']]);
-
+            $field['type'] = self::$typeMapping[$fieldMapping['type']];
             $transformedFields[] = $field;
         }
+
+        // Deal with all relationships
+        $transformedFields = array_merge($transformedFields, $joinColumns);
 
         // check for inversed relationships
         $inversedRelationships = $this->getInversedRelationships($doctrineMetadata);
         if (isset($inversedRelationships[$doctrineMetadata->name])) {
-            $transformedFields[] = array_merge([
-                'type' => 'referenced_list',
-            ], $inversedRelationships[$doctrineMetadata->name]);
+            $transformedFields[] = $inversedRelationships[$doctrineMetadata->name];
         }
 
         return $transformedFields;
@@ -77,6 +75,7 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
             if (isset($mapping['joinColumns'])) {
                 $column = $mapping['joinColumns'][0];
                 $joinColumns[$column['name']] = [
+                    'type' => 'reference',
                     'name' => $column['name'],
                     'referencedEntity' => $mappedEntity,
                     'referencedField' => $column['referencedColumnName']
@@ -84,6 +83,14 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
             }
 
             // many-to-many relationship, through a joinTable
+            if (isset($mapping['joinTable'])) {
+                $joinColumns[$mapping['fieldName']] = [
+                    'type' => 'reference_many',
+                    'name' => $mapping['fieldName'],
+                    'referencedEntity' => $this->getEntityName($mapping['targetEntity']),
+                    'referencedField' => $mapping['joinTable']['inverseJoinColumns'][0]['referencedColumnName'],
+                ];
+            }
         }
 
         return $joinColumns;
@@ -98,15 +105,22 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
                 continue;
             }
 
-            // single relationship, through joinColumns
             $inversedRelationships[$mapping['sourceEntity']] = [
+                'type' => 'referenced_list',
                 'name' => $mappedEntity,
                 'referencedEntity' => 'comment',
-                'referencedField'=> 'post_id',
-                'mappedBy' => $mapping['mappedBy']
+                'referencedField'=> 'post_id'
             ];
         }
 
         return $inversedRelationships;
+    }
+
+    private function getEntityName($className)
+    {
+        $classParts = explode('\\', $className);
+        $entityName = end($classParts);
+
+        return Inflector::tableize($entityName);
     }
 }

@@ -79,7 +79,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
         $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
         $this->assertEquals([
-            ['name' => 'post_id', 'type' => 'reference', 'referencedField' => 'id', 'referencedEntity' => 'post'],
+            'post_id' => ['name' => 'post_id', 'type' => 'reference', 'referencedField' => 'id', 'referencedEntity' => 'post'],
         ], $ngAdminConfiguration);
     }
 
@@ -99,8 +99,32 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
             'name' => 'comments',
             'referencedEntity' => 'comment',
             'referencedField'=> 'post_id',
-            'mappedBy' => 'comments',
             'type' => 'referenced_list',
+        ]], $ngAdminConfiguration);
+    }
+
+    public function testShouldTransformManyToManyRelationshipToReferenceManyField()
+    {
+        $this->doctrineMetadataMock->associationMappings = [
+            'tags' => [
+                'isOwningSide' => true,
+                'fieldName' => 'tags',
+                'targetEntity' => 'Acme\FooBundle\Entity\Tag',
+                'joinTable' => [
+                    'inverseJoinColumns' => [
+                        ['referencedColumnName' => 'id'],
+                    ],
+                ],
+            ],
+        ];
+
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
+
+        $this->assertEquals(['tags' => [
+            'name' => 'tags',
+            'type' => 'reference_many',
+            'referencedEntity' => 'tag',
+            'referencedField' => 'id',
         ]], $ngAdminConfiguration);
     }
 }
