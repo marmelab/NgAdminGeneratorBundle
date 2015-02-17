@@ -3,15 +3,15 @@
 
     var app = angular.module('myApp', ['ng-admin']);
 
-    {% for entityName, metadata in entities -%}
+    {% for entityName, fields in entities -%}
     app.config(function($provide, NgAdminConfigurationProvider) {
         $provide.factory("{{ entityName|capitalize }}Admin", function() {
             var nga = NgAdminConfigurationProvider;
             var {{ entityName }} = nga.entity('{{ entityName }}');
 
             var {{ entityName }}Fields = [
-{% for field in metadata.fieldMappings %}
-                nga.field('{{ field.fieldName }}'){{ loop.last ? "" : "," }}
+{% for field in fields %}
+                nga.field('{{ field.name }}', '{{ field.type }}'){{ loop.last ? "" : "," }}
 {% endfor %}
             ];
 

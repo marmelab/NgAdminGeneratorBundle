@@ -9,9 +9,9 @@
             var post = nga.entity('post');
 
             var postFields = [
-                nga.field('title'),
-                nga.field('body'),
-                nga.field('id')
+                nga.field('title', 'string'),
+                nga.field('body', 'text'),
+                nga.field('id', 'number')
             ];
 
             post.dashboardView()
@@ -40,10 +40,10 @@
             var comment = nga.entity('comment');
 
             var commentFields = [
-                nga.field('postId'),
-                nga.field('body'),
-                nga.field('createdAt'),
-                nga.field('id')
+                nga.field('postId', 'number'),
+                nga.field('body', 'text'),
+                nga.field('createdAt', 'date'),
+                nga.field('id', 'number')
             ];
 
             comment.dashboardView()
