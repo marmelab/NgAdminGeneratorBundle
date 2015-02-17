@@ -70,6 +70,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
             'post' => [
                 'fieldName' => 'post_id',
                 'isOwningSide' => true,
+                'targetEntity' => 'Acme\FooBundle\Entity\Post',
                 'joinColumns' => [
                     ['name' => 'post_id', 'referencedColumnName' => 'id'],
                 ]
@@ -79,7 +80,15 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
         $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
         $this->assertEquals([
-            'post_id' => ['name' => 'post_id', 'type' => 'reference', 'referencedField' => 'id', 'referencedEntity' => 'post'],
+            'post_id' => [
+                'name' => 'post_id',
+                'type' => 'reference',
+                'referencedField' => 'id',
+                'referencedEntity' => [
+                    'name' => 'post',
+                    'class' => 'Acme\FooBundle\Entity\Post',
+                ],
+            ],
         ], $ngAdminConfiguration);
     }
 
@@ -99,7 +108,10 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals([[
             'name' => 'comments',
-            'referencedEntity' => 'comment',
+            'referencedEntity' => [
+                'name' => 'comment',
+                'class' => 'Acme\FooBundle\Entity\Comment',
+            ],
             'referencedField'=> 'post_id',
             'type' => 'referenced_list',
         ]], $ngAdminConfiguration);
@@ -125,7 +137,10 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['tags' => [
             'name' => 'tags',
             'type' => 'reference_many',
-            'referencedEntity' => 'tag',
+            'referencedEntity' => [
+                'name' => 'tag',
+                'class' => 'Acme\FooBundle\Entity\Tag',
+            ],
             'referencedField' => 'id',
         ]], $ngAdminConfiguration);
     }

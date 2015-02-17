@@ -14,7 +14,7 @@
                 nga.field('id', 'number'),
                 nga.field('tags', 'reference_many')
                     .targetEntity(nga.entity('tag'))
-                    .targetField(nga.field('id')),
+                    .targetField(nga.field('name')),
                 nga.field('comments', 'referenced_list')
                     .targetEntity(nga.entity('comment'))
                     .targetReferenceField('post_id')
@@ -57,7 +57,7 @@
                 nga.field('id', 'number'),
                 nga.field('post_id', 'reference')
                     .targetEntity(nga.entity('post'))
-                    .targetField(nga.field('id'))
+                    .targetField(nga.field('title'))
             ];
 
             comment.dashboardView()
