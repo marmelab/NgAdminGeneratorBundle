@@ -16,6 +16,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
     public function testShouldTransformInputDataIntoExpectedFormat()
     {
         $doctrineMetadata = new \StdClass();
+        $doctrineMetadata->associationMappings = [];
         $doctrineMetadata->fieldMappings = [
             ['fieldName' => 'title', 'type' => 'string'],
             ['fieldName' => 'body', 'type' => 'text']
@@ -29,10 +30,11 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
         ], $ngAdminConfiguration);
     }
 
-    /** @dataProvider typeProvider */
-    public function testShouldDoctrineTypesIntoCorrectNgAdminTypes($doctrineType, $expectedNgAdminType)
+    /** @dataProvider nonReferenceTypeProvider */
+    public function testShouldTransformDoctrineNonReferentialTypesIntoCorrectNgAdminTypes($doctrineType, $expectedNgAdminType)
     {
         $doctrineMetadata = new \StdClass();
+        $doctrineMetadata->associationMappings = [];
         $doctrineMetadata->fieldMappings = [['fieldName' => 'myField', 'type' => $doctrineType]];
 
         $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
@@ -40,7 +42,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedNgAdminType, $ngAdminConfiguration[0]['type']);
     }
 
-    public function typeProvider()
+    public function nonReferenceTypeProvider()
     {
         return [
             ['smallint', 'number'],
@@ -57,5 +59,41 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
             ['boolean', 'boolean'],
             ['date', 'date'],
         ];
+    }
+
+    public function testShouldTransformDoctrineReferentialFieldsIntoCorrectNgAdminType()
+    {
+        $doctrineMetadata = new \StdClass();
+        $doctrineMetadata->fieldMappings = [['fieldName' => 'post_id']];
+        $doctrineMetadata->associationMappings = [
+            'post' => [
+                'fieldName' => 'post_id',
+                'isOwningSide' => true,
+                'joinColumns' => [
+                    ['name' => 'post_id', 'referencedColumnName' => 'id'],
+                ]
+            ],
+        ];
+
+        $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
+
+        $this->assertEquals([
+            ['name' => 'post_id', 'type' => 'reference', 'referencedField' => 'id', 'referencedEntity' => 'post'],
+        ], $ngAdminConfiguration);
+    }
+
+    public function testShouldNotTransformNotOwnedRelationshipToReferenceField()
+    {
+        $doctrineMetadata = new \StdClass();
+        $doctrineMetadata->fieldMappings = [['fieldName' => 'post_id', 'type' => 'integer']];
+        $doctrineMetadata->associationMappings = [
+            'comments' => [ 'isOwningSide' => false ],
+        ];
+
+        $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
+
+        $this->assertEquals([
+            ['name' => 'post_id', 'type' => 'number'],
+        ], $ngAdminConfiguration);
     }
 }

@@ -42,7 +42,9 @@
             var commentFields = [
                 nga.field('body', 'text'),
                 nga.field('created_at', 'date'),
-                nga.field('post_id', 'number'),
+                nga.field('post_id', 'reference')
+                    .targetEntity(nga.entity('post'))
+                    .targetField(nga.field('id')),
                 nga.field('id', 'number')
             ];
 

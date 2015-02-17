@@ -11,7 +11,13 @@
 
             var {{ entityName }}Fields = [
 {% for field in fields %}
-                nga.field('{{ field.name }}', '{{ field.type }}'){{ loop.last ? "" : "," }}
+    {%- if field.type == 'reference' %}
+                nga.field('{{ field.name }}', '{{ field.type }}')
+                    .targetEntity(nga.entity('{{ field.referencedEntity }}'))
+                    .targetField(nga.field('{{ field.referencedField }}'))
+    {%- else %}
+                nga.field('{{ field.name }}', '{{ field.type }}')
+    {%- endif %}{{ loop.last ? "" : "," }}
 {% endfor %}
             ];
 
