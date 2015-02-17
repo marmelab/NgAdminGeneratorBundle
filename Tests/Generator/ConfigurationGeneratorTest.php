@@ -31,8 +31,8 @@ class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $generator = new ConfigurationGenerator($emMock, $twig);
         $this->assertEquals(file_get_contents(__DIR__.'/expected/config.js'), $generator->generateConfiguration([
-           'Post',
-           'Comment',
+           'Acme\FooBundle\Entity\Post',
+           'Acme\FooBundle\Entity\Comment',
         ]));
     }
 

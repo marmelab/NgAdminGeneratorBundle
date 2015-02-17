@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Acme\FooBundle\Entity\Comment" table="Comment">
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="body" type="text" column="body" precision="0" scale="0" nullable="false"/>
+    <field name="created_at" type="date" column="created_at" precision="0" scale="0" nullable="false"/>
+    <field name="post_id" type="integer" column="post_id" precision="0" scale="0" nullable="false"/>
+    <many-to-one field="post" target-entity="Lemon\RestDemoBundle\Entity\Post" inversed-by="comments">
+      <join-columns>
+        <join-column name="post_id" referenced-column-name="id" nullable="1"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>
