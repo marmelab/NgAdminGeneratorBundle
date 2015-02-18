@@ -27,7 +27,7 @@ abstract class AbstractCommandTestCase extends WebTestCase
         fseek($fp, 0);
         $output = '';
         while (!feof($fp)) {
-            $output = fread($fp, 4096);
+            $output = fread($fp, 1024 * 1024);
         }
         fclose($fp);
 

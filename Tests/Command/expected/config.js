@@ -10,9 +10,9 @@
 
             post.dashboardView()
                 .fields([
+                    nga.field('id', 'number'),
                     nga.field('title', 'string'),
                     nga.field('body', 'text'),
-                    nga.field('id', 'number'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
                         .targetField(nga.field('name')),
@@ -20,9 +20,9 @@
 
             post.listView()
                 .fields([
+                    nga.field('id', 'number'),
                     nga.field('title', 'string'),
                     nga.field('body', 'text'),
-                    nga.field('id', 'number'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
                         .targetField(nga.field('name')),
@@ -40,9 +40,9 @@
 
             post.editionView()
                 .fields([
+                    nga.field('id', 'number'),
                     nga.field('title', 'string'),
                     nga.field('body', 'text'),
-                    nga.field('id', 'number'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
                         .targetField(nga.field('name')),
@@ -50,18 +50,18 @@
                         .targetEntity(nga.entity('comment'))
                         .targetReferenceField('post_id')
                         .targetFields([
+                            nga.field('id', 'number'),
                             nga.field('body', 'text'),
                             nga.field('created_at', 'date'),
-                            nga.field('id', 'number'),
 
                     ]),
                 ]);
 
             post.showView()
                 .fields([
+                    nga.field('id', 'number'),
                     nga.field('title', 'string'),
                     nga.field('body', 'text'),
-                    nga.field('id', 'number'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
                         .targetField(nga.field('name')),
@@ -69,9 +69,9 @@
                         .targetEntity(nga.entity('comment'))
                         .targetReferenceField('post_id')
                         .targetFields([
+                            nga.field('id', 'number'),
                             nga.field('body', 'text'),
                             nga.field('created_at', 'date'),
-                            nga.field('id', 'number'),
 
                     ]),
                 ]);
@@ -87,9 +87,9 @@
 
             comment.dashboardView()
                 .fields([
+                    nga.field('id', 'number'),
                     nga.field('body', 'text'),
                     nga.field('created_at', 'date'),
-                    nga.field('id', 'number'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
                         .targetField(nga.field('title')),
@@ -97,9 +97,9 @@
 
             comment.listView()
                 .fields([
+                    nga.field('id', 'number'),
                     nga.field('body', 'text'),
                     nga.field('created_at', 'date'),
-                    nga.field('id', 'number'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
                         .targetField(nga.field('title')),
@@ -117,9 +117,9 @@
 
             comment.editionView()
                 .fields([
+                    nga.field('id', 'number'),
                     nga.field('body', 'text'),
                     nga.field('created_at', 'date'),
-                    nga.field('id', 'number'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
                         .targetField(nga.field('title')),
@@ -127,9 +127,9 @@
 
             comment.showView()
                 .fields([
+                    nga.field('id', 'number'),
                     nga.field('body', 'text'),
                     nga.field('created_at', 'date'),
-                    nga.field('id', 'number'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
                         .targetField(nga.field('title')),
@@ -146,14 +146,14 @@
 
             tag.dashboardView()
                 .fields([
-                    nga.field('name', 'string'),
                     nga.field('id', 'number'),
+                    nga.field('name', 'string'),
                 ]);
 
             tag.listView()
                 .fields([
-                    nga.field('name', 'string'),
                     nga.field('id', 'number'),
+                    nga.field('name', 'string'),
                 ])
                 .listActions(['show', 'edit', 'delete']);
 
@@ -164,14 +164,14 @@
 
             tag.editionView()
                 .fields([
-                    nga.field('name', 'string'),
                     nga.field('id', 'number'),
+                    nga.field('name', 'string'),
                 ]);
 
             tag.showView()
                 .fields([
-                    nga.field('name', 'string'),
                     nga.field('id', 'number'),
+                    nga.field('name', 'string'),
                 ]);
 
             return tag;
@@ -192,3 +192,4 @@
         NgAdminConfigurationProvider.configure(admin);
     });
 })();
+

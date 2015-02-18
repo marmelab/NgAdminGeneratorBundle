@@ -2,9 +2,10 @@
 
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\DataTransformerInterface;
 
-class EntityReferencedFieldNameToMeaningfulNameTransformer
+class EntityReferencedFieldNameToMeaningfulNameTransformer implements DataTransformerInterface
 {
     private static $bestChoices = [
         'name',
@@ -15,9 +16,9 @@ class EntityReferencedFieldNameToMeaningfulNameTransformer
 
     private $metadataFactory;
 
-    public function __construct(ClassMetadataFactory $metadataFactory)
+    public function __construct(EntityManagerInterface $em)
     {
-        $this->metadataFactory = $metadataFactory;
+        $this->metadataFactory = $em->getMetadataFactory();
     }
 
     public function transform($entity)
@@ -39,7 +40,7 @@ class EntityReferencedFieldNameToMeaningfulNameTransformer
         return $entity;
     }
 
-    public function reverseTransform()
+    public function reverseTransform($data)
     {
         throw new \DomainException("You shouldn't need to transform a ng-admin name into a Doctrine column name.");
     }
