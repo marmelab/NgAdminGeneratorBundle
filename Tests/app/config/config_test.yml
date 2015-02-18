@@ -1,0 +1,18 @@
+doctrine:
+    dbal:
+        driver:   "pdo_sqlite"
+        path:     "%kernel.root_dir%/test.db"
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        auto_mapping: true
+
+framework:
+    secret:          "marmelab FTW!"
+    router:          { resource: "%kernel.root_dir%/config/routing.yml" }
+    session:         ~
+    default_locale:  en
+    translator:      { fallback: en }
+    profiler:        { only_exceptions: false }
+    templating:      { engines: ['twig'] }
+    validation:      { enable_annotations: true }
+    test: ~
