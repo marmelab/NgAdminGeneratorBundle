@@ -50,6 +50,7 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
 
         // check for inversed relationships
         $inversedRelationships = $this->getInversedRelationships($doctrineMetadata);
+
         if (isset($inversedRelationships[$doctrineMetadata->name])) {
             $transformedFields[] = $inversedRelationships[$doctrineMetadata->name];
         }
@@ -78,7 +79,7 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
                     'type' => 'reference',
                     'name' => $column['name'],
                     'referencedEntity' => $mappedEntity,
-                    'referencedField' => $column['referencedColumnName']
+                    'referencedField' => $column['referencedColumnName'],
                 ];
             }
 
@@ -108,8 +109,8 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
             $inversedRelationships[$mapping['sourceEntity']] = [
                 'type' => 'referenced_list',
                 'name' => $mappedEntity,
-                'referencedEntity' => 'comment',
-                'referencedField'=> 'post_id'
+                'referencedEntity' => $this->getEntityName($mapping['targetEntity']),
+                'referencedField'=> $mapping['mappedBy'].'_id', // @TODO: find a more robust way
             ];
         }
 

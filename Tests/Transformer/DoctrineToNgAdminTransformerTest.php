@@ -85,11 +85,13 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldTransformNotOwnedRelationshipToReferencedListField()
     {
+        $this->doctrineMetadataMock->name = 'Acme\FooBundle\Entity\Post';
         $this->doctrineMetadataMock->associationMappings = [
             'comments' => [
                 'isOwningSide' => false,
-                'sourceEntity' => 'Acme\FooBundle\Entity\Comment',
-                'mappedBy' => 'comments',
+                'sourceEntity' => 'Acme\FooBundle\Entity\Post',
+                'targetEntity' => 'Acme\FooBundle\Entity\Comment',
+                'mappedBy' => 'post',
             ],
         ];
 
