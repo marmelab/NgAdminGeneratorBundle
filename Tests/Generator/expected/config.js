@@ -8,39 +8,73 @@
             var nga = NgAdminConfigurationProvider;
             var post = nga.entity('post');
 
-            var postFields = [
-                nga.field('title', 'string'),
-                nga.field('body', 'text'),
-                nga.field('id', 'number'),
-                nga.field('tags', 'reference_many')
-                    .targetEntity(nga.entity('tag'))
-                    .targetField(nga.field('name')),
-                nga.field('comments', 'referenced_list')
-                    .targetEntity(nga.entity('comment'))
-                    .targetReferenceField('post_id')
-                    .targetFields([
-                        nga.field('body', 'text'),
-                        nga.field('created_at', 'date'),
-                        nga.field('id', 'number'),
-
-                    ])
-            ];
-
             post.dashboardView()
-                .fields(postFields);
+                .fields([
+                    nga.field('title', 'string'),
+                    nga.field('body', 'text'),
+                    nga.field('id', 'number'),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
+                ]);
 
             post.listView()
-                .fields(postFields)
+                .fields([
+                    nga.field('title', 'string'),
+                    nga.field('body', 'text'),
+                    nga.field('id', 'number'),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
+                ])
                 .listActions(['show', 'edit', 'delete']);
 
             post.creationView()
-                .fields(postFields);
+                .fields([
+                    nga.field('title', 'string'),
+                    nga.field('body', 'text'),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
+                ]);
 
             post.editionView()
-                .fields(postFields);
+                .fields([
+                    nga.field('title', 'string'),
+                    nga.field('body', 'text'),
+                    nga.field('id', 'number'),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
+                    nga.field('comments', 'referenced_list')
+                        .targetEntity(nga.entity('comment'))
+                        .targetReferenceField('post_id')
+                        .targetFields([
+                            nga.field('body', 'text'),
+                            nga.field('created_at', 'date'),
+                            nga.field('id', 'number'),
+
+                    ]),
+                ]);
 
             post.showView()
-                .fields(postFields);
+                .fields([
+                    nga.field('title', 'string'),
+                    nga.field('body', 'text'),
+                    nga.field('id', 'number'),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
+                    nga.field('comments', 'referenced_list')
+                        .targetEntity(nga.entity('comment'))
+                        .targetReferenceField('post_id')
+                        .targetFields([
+                            nga.field('body', 'text'),
+                            nga.field('created_at', 'date'),
+                            nga.field('id', 'number'),
+
+                    ]),
+                ]);
 
             return post;
         });
@@ -51,30 +85,55 @@
             var nga = NgAdminConfigurationProvider;
             var comment = nga.entity('comment');
 
-            var commentFields = [
-                nga.field('body', 'text'),
-                nga.field('created_at', 'date'),
-                nga.field('id', 'number'),
-                nga.field('post_id', 'reference')
-                    .targetEntity(nga.entity('post'))
-                    .targetField(nga.field('title'))
-            ];
-
             comment.dashboardView()
-                .fields(commentFields);
+                .fields([
+                    nga.field('body', 'text'),
+                    nga.field('created_at', 'date'),
+                    nga.field('id', 'number'),
+                    nga.field('post_id', 'reference')
+                        .targetEntity(nga.entity('post'))
+                        .targetField(nga.field('title')),
+                ]);
 
             comment.listView()
-                .fields(commentFields)
+                .fields([
+                    nga.field('body', 'text'),
+                    nga.field('created_at', 'date'),
+                    nga.field('id', 'number'),
+                    nga.field('post_id', 'reference')
+                        .targetEntity(nga.entity('post'))
+                        .targetField(nga.field('title')),
+                ])
                 .listActions(['show', 'edit', 'delete']);
 
             comment.creationView()
-                .fields(commentFields);
+                .fields([
+                    nga.field('body', 'text'),
+                    nga.field('created_at', 'date'),
+                    nga.field('post_id', 'reference')
+                        .targetEntity(nga.entity('post'))
+                        .targetField(nga.field('title')),
+                ]);
 
             comment.editionView()
-                .fields(commentFields);
+                .fields([
+                    nga.field('body', 'text'),
+                    nga.field('created_at', 'date'),
+                    nga.field('id', 'number'),
+                    nga.field('post_id', 'reference')
+                        .targetEntity(nga.entity('post'))
+                        .targetField(nga.field('title')),
+                ]);
 
             comment.showView()
-                .fields(commentFields);
+                .fields([
+                    nga.field('body', 'text'),
+                    nga.field('created_at', 'date'),
+                    nga.field('id', 'number'),
+                    nga.field('post_id', 'reference')
+                        .targetEntity(nga.entity('post'))
+                        .targetField(nga.field('title')),
+                ]);
 
             return comment;
         });
@@ -85,26 +144,35 @@
             var nga = NgAdminConfigurationProvider;
             var tag = nga.entity('tag');
 
-            var tagFields = [
-                nga.field('name', 'string'),
-                nga.field('id', 'number')
-            ];
-
             tag.dashboardView()
-                .fields(tagFields);
+                .fields([
+                    nga.field('name', 'string'),
+                    nga.field('id', 'number'),
+                ]);
 
             tag.listView()
-                .fields(tagFields)
+                .fields([
+                    nga.field('name', 'string'),
+                    nga.field('id', 'number'),
+                ])
                 .listActions(['show', 'edit', 'delete']);
 
             tag.creationView()
-                .fields(tagFields);
+                .fields([
+                    nga.field('name', 'string'),
+                ]);
 
             tag.editionView()
-                .fields(tagFields);
+                .fields([
+                    nga.field('name', 'string'),
+                    nga.field('id', 'number'),
+                ]);
 
             tag.showView()
-                .fields(tagFields);
+                .fields([
+                    nga.field('name', 'string'),
+                    nga.field('id', 'number'),
+                ]);
 
             return tag;
         });

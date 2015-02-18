@@ -10,6 +10,7 @@ class TwigTestLoader implements \Twig_LoaderInterface
     {
         foreach([
             'config.js.twig',
+            'field.js.twig',
             'fields.js.twig',
             'reference.js.twig',
             'reference_many.js.twig',
