@@ -11,7 +11,19 @@
             var postFields = [
                 nga.field('title', 'string'),
                 nga.field('body', 'text'),
-                nga.field('id', 'number')
+                nga.field('id', 'number'),
+                nga.field('tags', 'reference_many')
+                    .targetEntity(nga.entity('tag'))
+                    .targetField(nga.field('id')),
+                nga.field('comments', 'referenced_list')
+                    .targetEntity(nga.entity('comment'))
+                    .targetReferenceField('post_id')
+                    .targetFields([
+                        nga.field('body', 'text'),
+                        nga.field('created_at', 'date'),
+                        nga.field('id', 'number'),
+
+                    ])
             ];
 
             post.dashboardView()
@@ -40,10 +52,12 @@
             var comment = nga.entity('comment');
 
             var commentFields = [
-                nga.field('postId', 'number'),
                 nga.field('body', 'text'),
-                nga.field('createdAt', 'date'),
-                nga.field('id', 'number')
+                nga.field('created_at', 'date'),
+                nga.field('id', 'number'),
+                nga.field('post_id', 'reference')
+                    .targetEntity(nga.entity('post'))
+                    .targetField(nga.field('id'))
             ];
 
             comment.dashboardView()
@@ -66,7 +80,37 @@
         });
     });
 
-    app.config(function(NgAdminConfigurationProvider, PostAdminProvider, CommentAdminProvider) {
+    app.config(function($provide, NgAdminConfigurationProvider) {
+        $provide.factory("TagAdmin", function() {
+            var nga = NgAdminConfigurationProvider;
+            var tag = nga.entity('tag');
+
+            var tagFields = [
+                nga.field('name', 'string'),
+                nga.field('id', 'number')
+            ];
+
+            tag.dashboardView()
+                .fields(tagFields);
+
+            tag.listView()
+                .fields(tagFields)
+                .listActions(['show', 'edit', 'delete']);
+
+            tag.creationView()
+                .fields(tagFields);
+
+            tag.editionView()
+                .fields(tagFields);
+
+            tag.showView()
+                .fields(tagFields);
+
+            return tag;
+        });
+    });
+
+    app.config(function(NgAdminConfigurationProvider, PostAdminProvider, CommentAdminProvider, TagAdminProvider) {
         var admin = NgAdminConfigurationProvider
             .application('')
             .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/')
@@ -74,6 +118,7 @@
         admin
             .addEntity(PostAdminProvider.$get())
             .addEntity(CommentAdminProvider.$get())
+            .addEntity(TagAdminProvider.$get())
         ;
 
         NgAdminConfigurationProvider.configure(admin);

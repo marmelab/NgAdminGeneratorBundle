@@ -6,22 +6,28 @@ use marmelab\NgAdminGeneratorBundle\Transformer\DoctrineToNgAdminTransformer;
 
 class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var DoctrineToNgAdminTransformer */
     private $transformer;
+
+    private $doctrineMetadataMock;
 
     public function setUp()
     {
         $this->transformer = new DoctrineToNgAdminTransformer();
+        $this->doctrineMetadataMock = new \StdClass();
+        $this->doctrineMetadataMock->name = 'Acme\FooBundle\Entity\Comment';
+        $this->doctrineMetadataMock->associationMappings = [];
+        $this->doctrineMetadataMock->fieldMappings = [];
     }
 
     public function testShouldTransformInputDataIntoExpectedFormat()
     {
-        $doctrineMetadata = new \StdClass();
-        $doctrineMetadata->fieldMappings = [
+        $this->doctrineMetadataMock->fieldMappings = [
             ['fieldName' => 'title', 'type' => 'string'],
             ['fieldName' => 'body', 'type' => 'text']
         ];
 
-        $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
         $this->assertEquals([
             ['name' => 'title', 'type' => 'string'],
@@ -29,18 +35,16 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
         ], $ngAdminConfiguration);
     }
 
-    /** @dataProvider typeProvider */
-    public function testShouldDoctrineTypesIntoCorrectNgAdminTypes($doctrineType, $expectedNgAdminType)
+    /** @dataProvider nonReferenceTypeProvider */
+    public function testShouldTransformDoctrineNonReferentialTypesIntoCorrectNgAdminTypes($doctrineType, $expectedNgAdminType)
     {
-        $doctrineMetadata = new \StdClass();
-        $doctrineMetadata->fieldMappings = [['fieldName' => 'myField', 'type' => $doctrineType]];
-
-        $ngAdminConfiguration = $this->transformer->transform($doctrineMetadata);
+        $this->doctrineMetadataMock->fieldMappings = [['fieldName' => 'myField', 'type' => $doctrineType]];
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
         $this->assertEquals($expectedNgAdminType, $ngAdminConfiguration[0]['type']);
     }
 
-    public function typeProvider()
+    public function nonReferenceTypeProvider()
     {
         return [
             ['smallint', 'number'],
@@ -57,5 +61,72 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
             ['boolean', 'boolean'],
             ['date', 'date'],
         ];
+    }
+
+    public function testShouldTransformDoctrineReferentialFieldsIntoCorrectNgAdminType()
+    {
+        $this->doctrineMetadataMock->fieldMappings = [['fieldName' => 'post_id']];
+        $this->doctrineMetadataMock->associationMappings = [
+            'post' => [
+                'fieldName' => 'post_id',
+                'isOwningSide' => true,
+                'joinColumns' => [
+                    ['name' => 'post_id', 'referencedColumnName' => 'id'],
+                ]
+            ],
+        ];
+
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
+
+        $this->assertEquals([
+            'post_id' => ['name' => 'post_id', 'type' => 'reference', 'referencedField' => 'id', 'referencedEntity' => 'post'],
+        ], $ngAdminConfiguration);
+    }
+
+    public function testShouldTransformNotOwnedRelationshipToReferencedListField()
+    {
+        $this->doctrineMetadataMock->name = 'Acme\FooBundle\Entity\Post';
+        $this->doctrineMetadataMock->associationMappings = [
+            'comments' => [
+                'isOwningSide' => false,
+                'sourceEntity' => 'Acme\FooBundle\Entity\Post',
+                'targetEntity' => 'Acme\FooBundle\Entity\Comment',
+                'mappedBy' => 'post',
+            ],
+        ];
+
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
+
+        $this->assertEquals([[
+            'name' => 'comments',
+            'referencedEntity' => 'comment',
+            'referencedField'=> 'post_id',
+            'type' => 'referenced_list',
+        ]], $ngAdminConfiguration);
+    }
+
+    public function testShouldTransformManyToManyRelationshipToReferenceManyField()
+    {
+        $this->doctrineMetadataMock->associationMappings = [
+            'tags' => [
+                'isOwningSide' => true,
+                'fieldName' => 'tags',
+                'targetEntity' => 'Acme\FooBundle\Entity\Tag',
+                'joinTable' => [
+                    'inverseJoinColumns' => [
+                        ['referencedColumnName' => 'id'],
+                    ],
+                ],
+            ],
+        ];
+
+        $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
+
+        $this->assertEquals(['tags' => [
+            'name' => 'tags',
+            'type' => 'reference_many',
+            'referencedEntity' => 'tag',
+            'referencedField' => 'id',
+        ]], $ngAdminConfiguration);
     }
 }

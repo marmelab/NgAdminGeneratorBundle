@@ -21,7 +21,7 @@ class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $emMock->expects($this->exactly(2))
+        $emMock->expects($this->exactly(3))
             ->method('getClassMetadata')
             ->will($this->returnCallback(function($className) {
                 return $this->getMetadata($className);
@@ -31,8 +31,9 @@ class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $generator = new ConfigurationGenerator($emMock, $twig);
         $this->assertEquals(file_get_contents(__DIR__.'/expected/config.js'), $generator->generateConfiguration([
-           'Post',
-           'Comment',
+           'Acme\FooBundle\Entity\Post',
+           'Acme\FooBundle\Entity\Comment',
+           'Acme\FooBundle\Entity\Tag',
         ]));
     }
 
