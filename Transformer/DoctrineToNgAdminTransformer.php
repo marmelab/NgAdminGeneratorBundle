@@ -2,9 +2,7 @@
 
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
-use Symfony\Component\Form\DataTransformerInterface;
-
-class DoctrineToNgAdminTransformer implements DataTransformerInterface
+class DoctrineToNgAdminTransformer implements TransformerInterface
 {
     /**
      * @see http://doctrine-dbal.readthedocs.org/en/latest/reference/types.html
