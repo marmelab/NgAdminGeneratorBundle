@@ -91,7 +91,10 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
                 $joinColumns[$mapping['fieldName']] = [
                     'type' => 'reference_many',
                     'name' => $mapping['fieldName'],
-                    'referencedEntity' => $this->getEntityName($mapping['targetEntity']),
+                    'referencedEntity' => [
+                        'name' => $this->getEntityName($mapping['targetEntity']),
+                        'class' => $mapping['targetEntity'],
+                    ],
                     'referencedField' => $mapping['joinTable']['inverseJoinColumns'][0]['referencedColumnName'],
                 ];
             }

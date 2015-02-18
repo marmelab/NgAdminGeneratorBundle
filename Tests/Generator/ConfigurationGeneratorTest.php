@@ -13,19 +13,23 @@ use marmelab\NgAdminGeneratorBundle\Test\Twig\Loader\TwigTestLoader;
 
 class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
 {
-    private $metadataFactory;
-
     public function testGenerateConfiguration()
     {
+        $metadataFactory = $this->getMetadataFactory();
+
         $emMock = $this->getMockBuilder('Doctrine\ORM\EntityManager')
             ->disableOriginalConstructor()
             ->getMock();
 
         $emMock->expects($this->exactly(3))
             ->method('getClassMetadata')
-            ->will($this->returnCallback(function($className) {
-                return $this->getMetadata($className);
+            ->will($this->returnCallback(function($className) use($metadataFactory) {
+                return $metadataFactory->getMetadataFor($className);
             }));
+
+        $emMock->expects($this->once())
+            ->method('getMetadataFactory')
+            ->willReturn($metadataFactory);
 
         $twig = new \Twig_Environment(new TwigTestLoader());
 
@@ -37,24 +41,22 @@ class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
         ]));
     }
 
-    private function getMetadata($className)
+    private function getMetadataFactory()
     {
-        if (!$this->metadataFactory) {
-            $driver = new XmlDriver(__DIR__.'/metadata', '.orm.xml');
+        $driver = new XmlDriver(__DIR__.'/metadata', '.orm.xml');
 
-            $connection = new Connection([], new Driver());
+        $connection = new Connection([], new Driver());
 
-            $configuration = new Configuration();
-            $configuration->setMetadataDriverImpl($driver);
-            $configuration->setProxyDir(sys_get_temp_dir());
-            $configuration->setProxyNamespace('Foo\Proxy');
+        $configuration = new Configuration();
+        $configuration->setMetadataDriverImpl($driver);
+        $configuration->setProxyDir(sys_get_temp_dir());
+        $configuration->setProxyNamespace('Foo\Proxy');
 
-            $em = EntityManager::create($connection, $configuration);
+        $em = EntityManager::create($connection, $configuration);
 
-            $this->metadataFactory = new DisconnectedClassMetadataFactory();
-            $this->metadataFactory->setEntityManager($em);
-        }
+        $factory = new DisconnectedClassMetadataFactory();
+        $factory->setEntityManager($em);
 
-        return $this->metadataFactory->getMetadataFor($className);
+        return $factory;
     }
 }

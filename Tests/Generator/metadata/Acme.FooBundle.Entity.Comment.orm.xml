@@ -7,7 +7,7 @@
     <field name="body" type="text" column="body" precision="0" scale="0" nullable="false"/>
     <field name="created_at" type="date" column="created_at" precision="0" scale="0" nullable="false"/>
     <field name="post_id" type="integer" column="post_id" precision="0" scale="0" nullable="false"/>
-    <many-to-one field="post" target-entity="Lemon\RestDemoBundle\Entity\Post" inversed-by="comments">
+    <many-to-one field="post" target-entity="Acme\FooBundle\Entity\Post" inversed-by="comments">
       <join-columns>
         <join-column name="post_id" referenced-column-name="id" nullable="1"/>
       </join-columns>

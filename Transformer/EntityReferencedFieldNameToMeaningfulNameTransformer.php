@@ -23,15 +23,17 @@ class EntityReferencedFieldNameToMeaningfulNameTransformer
     public function transform($entity)
     {
         foreach ($entity as $key => &$field) {
-            if ($field['type'] === 'reference') {
-                $entityFields = $this->metadataFactory->getMetadataFor($field['referencedEntity']['class']);
-                $bestFields = array_intersect(self::$bestChoices, $entityFields->getFieldNames());
-                if (!count($bestFields)) {
-                    continue;
-                }
-
-                $field['referencedField'] = current($bestFields);
+            if (!in_array($field['type'], ['reference', 'reference_many'])) {
+                continue;
             }
+
+            $entityFields = $this->metadataFactory->getMetadataFor($field['referencedEntity']['class']);
+            $bestFields = array_intersect(self::$bestChoices, $entityFields->getFieldNames());
+            if (!count($bestFields)) {
+                continue;
+            }
+
+            $field['referencedField'] = current($bestFields);
         }
 
         return $entity;

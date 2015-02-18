@@ -11,7 +11,7 @@
         <cascade-all/>
       </cascade>
     </one-to-many>
-    <many-to-many field="tags" target-entity="Lemon\RestDemoBundle\Entity\Tag">
+    <many-to-many field="tags" target-entity="Acme\FooBundle\Entity\Tag">
       <join-table name="Post_Tag">
         <join-columns>
           <join-column name="post_id" referenced-column-name="id"/>
