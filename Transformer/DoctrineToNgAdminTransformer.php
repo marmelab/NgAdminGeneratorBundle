@@ -3,6 +3,7 @@
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
 use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 class DoctrineToNgAdminTransformer implements TransformerInterface
 {
@@ -77,7 +78,10 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
                 $joinColumns[$column['name']] = [
                     'type' => 'reference',
                     'name' => $column['name'],
-                    'referencedEntity' => $mappedEntity,
+                    'referencedEntity' => [
+                        'name' => $mappedEntity,
+                        'class' => $mapping['targetEntity'],
+                    ],
                     'referencedField' => $column['referencedColumnName'],
                 ];
             }
@@ -87,7 +91,10 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
                 $joinColumns[$mapping['fieldName']] = [
                     'type' => 'reference_many',
                     'name' => $mapping['fieldName'],
-                    'referencedEntity' => $this->getEntityName($mapping['targetEntity']),
+                    'referencedEntity' => [
+                        'name' => $this->getEntityName($mapping['targetEntity']),
+                        'class' => $mapping['targetEntity'],
+                    ],
                     'referencedField' => $mapping['joinTable']['inverseJoinColumns'][0]['referencedColumnName'],
                 ];
             }
@@ -108,7 +115,10 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
             $inversedRelationships[$mapping['sourceEntity']] = [
                 'type' => 'referenced_list',
                 'name' => $mappedEntity,
-                'referencedEntity' => $this->getEntityName($mapping['targetEntity']),
+                'referencedEntity' => [
+                    'name' => $this->getEntityName($mapping['targetEntity']),
+                    'class' => $mapping['targetEntity'],
+                ],
                 'referencedField'=> $mapping['mappedBy'].'_id', // @TODO: find a more robust way
             ];
         }

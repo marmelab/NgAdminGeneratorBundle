@@ -1,8 +1,8 @@
                 nga.field('{{ field.name }}', '{{ field.type }}')
-                    .targetEntity(nga.entity('{{ field.referencedEntity }}'))
+                    .targetEntity(nga.entity('{{ field.referencedEntity.name }}'))
                     .targetReferenceField('{{ field.referencedField }}')
                     .targetFields([
-{% for field in entities[field.referencedEntity] %}{% if field.type != 'reference' and field.type != 'referenced_list' %}
+{% for field in entities[field.referencedEntity.name] %}{% if field.type != 'reference' and field.type != 'referenced_list' %}
                         nga.field('{{ field.name }}', '{{ field.type }}')
 {%- endif %}{{ loop.last ? "" : "," }}
 {% endfor %}                    ])
