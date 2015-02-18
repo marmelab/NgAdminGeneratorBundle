@@ -3,6 +3,7 @@
 namespace marmelab\NgAdminGeneratorBundle\Generator;
 
 use Doctrine\ORM\EntityManagerInterface;
+use marmelab\NgAdminGeneratorBundle\Transformer\DoctrineToNgAdminTransformer;
 
 class ConfigurationGenerator
 {
@@ -17,12 +18,14 @@ class ConfigurationGenerator
 
     public function generateConfiguration(array $classNames)
     {
+        $transformer = new DoctrineToNgAdminTransformer();
+
         $entities = [];
         foreach ($classNames as $className) {
             $classNameParts = explode('\\', $className);
             $varName = lcfirst(end($classNameParts));
 
-            $entities[$varName] = $this->em->getClassMetadata($className);
+            $entities[$varName] = $transformer->transform($this->em->getClassMetadata($className));
         }
 
         return $this->twig->render('marmelabNgAdminGeneratorBundle:Configuration:config.js.twig', compact('entities'));
