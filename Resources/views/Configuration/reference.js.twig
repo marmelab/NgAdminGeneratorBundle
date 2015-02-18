@@ -1,3 +1,3 @@
 nga.field('{{ field.name }}', 'reference')
-                    .targetEntity(nga.entity('{{ field.referencedEntity }}'))
+                    .targetEntity(nga.entity('{{ field.referencedEntity.name }}'))
                     .targetField(nga.field('{{ field.referencedField }}'))

@@ -78,7 +78,10 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
                 $joinColumns[$column['name']] = [
                     'type' => 'reference',
                     'name' => $column['name'],
-                    'referencedEntity' => $mappedEntity,
+                    'referencedEntity' => [
+                        'name' => $mappedEntity,
+                        'class' => $mapping['targetEntity'],
+                    ],
                     'referencedField' => $column['referencedColumnName'],
                 ];
             }
@@ -109,7 +112,10 @@ class DoctrineToNgAdminTransformer implements DataTransformerInterface
             $inversedRelationships[$mapping['sourceEntity']] = [
                 'type' => 'referenced_list',
                 'name' => $mappedEntity,
-                'referencedEntity' => $this->getEntityName($mapping['targetEntity']),
+                'referencedEntity' => [
+                    'name' => $this->getEntityName($mapping['targetEntity']),
+                    'class' => $mapping['targetEntity'],
+                ],
                 'referencedField'=> $mapping['mappedBy'].'_id', // @TODO: find a more robust way
             ];
         }
