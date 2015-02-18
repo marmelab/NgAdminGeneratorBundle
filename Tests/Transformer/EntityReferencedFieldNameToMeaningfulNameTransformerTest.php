@@ -20,8 +20,8 @@ class EntityReferencedFieldNameToMeaningfulNameTransformerTest extends \PHPUnit_
             ]
         ];
 
-        $metadataFactory = $this->getMetadataFactoryMock('Lemon\RestDemoBundle\Entity\Post', ['id', 'title']);
-        $transformer = new EntityReferencedFieldNameToMeaningfulNameTransformer($metadataFactory);
+        $emMock = $this->getEntityManagerMock('Lemon\RestDemoBundle\Entity\Post', ['id', 'title']);
+        $transformer = new EntityReferencedFieldNameToMeaningfulNameTransformer($emMock);
         $transformedEntity = $transformer->transform($entity);
 
         $this->assertEquals($transformedEntity['post_id']['referencedField'], 'title');
@@ -41,14 +41,14 @@ class EntityReferencedFieldNameToMeaningfulNameTransformerTest extends \PHPUnit_
             ]
         ];
 
-        $metadataFactory = $this->getMetadataFactoryMock('Lemon\RestDemoBundle\Entity\Tag', ['id', 'name']);
-        $transformer = new EntityReferencedFieldNameToMeaningfulNameTransformer($metadataFactory);
+        $emMock = $this->getEntityManagerMock('Lemon\RestDemoBundle\Entity\Tag', ['id', 'name']);
+        $transformer = new EntityReferencedFieldNameToMeaningfulNameTransformer($emMock);
         $transformedEntity = $transformer->transform($entity);
 
         $this->assertEquals($transformedEntity['tags']['referencedField'], 'name');
     }
 
-    private function getMetadataFactoryMock($entityClass, array $fieldNames = [])
+    private function getEntityManagerMock($entityClass, array $fieldNames = [])
     {
         $classMetadata = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')
             ->disableOriginalConstructor()
@@ -67,6 +67,14 @@ class EntityReferencedFieldNameToMeaningfulNameTransformerTest extends \PHPUnit_
             ->with($entityClass)
             ->willReturn($classMetadata);
 
-        return $factoryMock;
+        $emMock = $this->getMockBuilder('Doctrine\ORM\EntityManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $emMock->expects($this->once())
+            ->method('getMetadataFactory')
+            ->willReturn($factoryMock);
+
+        return $emMock;
     }
 }
