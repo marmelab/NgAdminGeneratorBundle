@@ -1,8 +1,9 @@
-                nga.field('{{ field.name }}', '{{ field.type }}')
-                    .targetEntity(nga.entity('{{ field.referencedEntity.name }}'))
-                    .targetReferenceField('{{ field.referencedField }}')
-                    .targetFields([
-{% for field in entities[field.referencedEntity.name] %}{% if field.type != 'reference' and field.type != 'referenced_list' %}
-                        nga.field('{{ field.name }}', '{{ field.type }}')
+                    nga.field('{{ field.name }}', '{{ field.type }}')
+                        .targetEntity(nga.entity('{{ field.referencedEntity.name }}'))
+                        .targetReferenceField('{{ field.referencedField }}')
+                        .targetFields([
+{% for field in entities[field.referencedEntity.name] -%}
+{% if field.type != 'reference' and field.type != 'referenced_list' %}
+                            {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:field.js.twig" %}{% endspaceless %}
 {%- endif %}{{ loop.last ? "" : "," }}
 {% endfor %}                    ])
