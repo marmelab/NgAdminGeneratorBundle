@@ -22,7 +22,7 @@ class EntityReferencedFieldNameToMeaningfulNameTransformer implements Transforme
 
     public function transform($entity)
     {
-        foreach ($entity as $key => &$field) {
+        foreach ($entity['fields'] as $key => &$field) {
             if (!in_array($field['type'], ['reference', 'reference_many'])) {
                 continue;
             }

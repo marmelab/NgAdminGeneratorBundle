@@ -30,11 +30,14 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
     {
         $joinColumns = $this->getJoinColumns($doctrineMetadata);
 
-        $transformedFields = [];
+        $transformedEntity = [
+            'class' => $doctrineMetadata->name,
+            'fields' => [],
+        ];
+
         foreach ($doctrineMetadata->fieldMappings as $fieldMapping) {
             $field = [
-                'name' => $fieldMapping['fieldName'],
-                'class' => $doctrineMetadata->name, // @TODO: move this data outside field mappings
+                'name' => $fieldMapping['fieldName']
             ];
 
             // if field is in relationship, we'll deal it later
@@ -43,17 +46,17 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
             }
 
             $field['type'] = self::$typeMapping[$fieldMapping['type']];
-            $transformedFields[$field['name']] = $field;
+            $transformedEntity['fields'][$field['name']] = $field;
         }
 
         // Deal with all relationships
-        $transformedFields = array_merge($transformedFields, $joinColumns);
+        $transformedEntity['fields'] = array_merge($transformedEntity['fields'], $joinColumns);
 
         // check for inversed relationships
         $inversedRelationships = $this->getInversedRelationships($doctrineMetadata);
-        $transformedFields = array_merge($transformedFields, $inversedRelationships);
+        $transformedEntity['fields'] = array_merge($transformedEntity['fields'], $inversedRelationships);
 
-        return $transformedFields;
+        return $transformedEntity;
     }
 
     public function reverseTransform($ngAdminConfiguration)

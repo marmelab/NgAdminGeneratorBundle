@@ -12,14 +12,17 @@ class EntityToEntityWithoutExcludedFieldsTransformerTest extends \PHPUnit_Framew
         $transformer = new EntityToEntityWithoutExcludedFieldsTransformer($serializer);
 
         $entity = [
-            'id' => ['name' => 'id', 'class' => 'Acme\FooBundle\Post'],
-            'title' => ['name' => 'title', 'class' => 'Acme\FooBundle\Post'],
-            'slug' => ['name' => 'slug', 'class' => 'Acme\FooBundle\Post'],
-            'body' => ['name' => 'body', 'class' => 'Acme\FooBundle\Post'],
-            'created_at' => ['name' => 'created_at', 'class' => 'Acme\FooBundle\Post'],
+            'class' => 'Acme\FooBundle\Post',
+            'fields' => [
+                'id' => ['name' => 'id'],
+                'title' => ['name' => 'title'],
+                'slug' => ['name' => 'slug'],
+                'body' => ['name' => 'body'],
+                'created_at' => ['name' => 'created_at'],
+            ],
         ];
 
-        $this->assertEquals(['id', 'title', 'body'], array_keys($transformer->transform($entity)));
+        $this->assertEquals(['id', 'title', 'body'], array_keys($transformer->transform($entity)['fields']));
     }
 
     private function getSerializerMock(array $exportedFieldNames = [])

@@ -15,12 +15,12 @@ class EntityToEntityWithoutExcludedFieldsTransformer implements TransformerInter
 
     public function transform($entity)
     {
-        $entityClass = current($entity)['class'];
+        $entityClass = $entity['class'];
         $fields = array_keys($this->metadataFactory->getMetadataForClass($entityClass)->propertyMetadata);
 
-        $fieldsToRemove = array_diff(array_keys($entity), $fields);
+        $fieldsToRemove = array_diff(array_keys($entity['fields']), $fields);
         foreach ($fieldsToRemove as $fieldToRemove) {
-            unset($entity[$fieldToRemove]);
+            unset($entity['fields'][$fieldToRemove]);
         }
 
         return $entity;

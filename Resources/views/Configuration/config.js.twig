@@ -3,7 +3,7 @@
 
     var app = angular.module('myApp', ['ng-admin']);
 
-    {% for entityName, fields in entities -%}
+    {% for entityName, entity in entities -%}
     app.config(function($provide, NgAdminConfigurationProvider) {
         $provide.factory("{{ entityName|capitalize }}Admin", function() {
             var nga = NgAdminConfigurationProvider;
@@ -12,14 +12,14 @@
             {{ entityName }}.dashboardView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "dashboard",
-                    "fields": fields[0:3]
+                    "fields": entity.fields[0:3]
                 } only %}
                 ]);
 
             {{ entityName }}.listView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "list",
-                    "fields": fields
+                    "fields": entity.fields
                 } %}
                 ])
                 .listActions(['show', 'edit', 'delete']);
@@ -27,21 +27,21 @@
             {{ entityName }}.creationView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "creation",
-                    "fields": fields
+                    "fields": entity.fields
                 } %}
                 ]);
 
             {{ entityName }}.editionView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "edition",
-                    "fields": fields
+                    "fields": entity.fields
                 } %}
                 ]);
 
             {{ entityName }}.showView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "show",
-                    "fields": fields
+                    "fields": entity.fields
                 } %}
                 ]);
 
