@@ -30,10 +30,14 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
     {
         $joinColumns = $this->getJoinColumns($doctrineMetadata);
 
-        $transformedFields = [];
+        $transformedEntity = [
+            'class' => $doctrineMetadata->name,
+            'fields' => [],
+        ];
+
         foreach ($doctrineMetadata->fieldMappings as $fieldMapping) {
             $field = [
-                'name' => $fieldMapping['fieldName'],
+                'name' => $fieldMapping['fieldName']
             ];
 
             // if field is in relationship, we'll deal it later
@@ -42,20 +46,17 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
             }
 
             $field['type'] = self::$typeMapping[$fieldMapping['type']];
-            $transformedFields[] = $field;
+            $transformedEntity['fields'][$field['name']] = $field;
         }
 
         // Deal with all relationships
-        $transformedFields = array_merge($transformedFields, $joinColumns);
+        $transformedEntity['fields'] = array_merge($transformedEntity['fields'], $joinColumns);
 
         // check for inversed relationships
         $inversedRelationships = $this->getInversedRelationships($doctrineMetadata);
+        $transformedEntity['fields'] = array_merge($transformedEntity['fields'], $inversedRelationships);
 
-        if (isset($inversedRelationships[$doctrineMetadata->name])) {
-            $transformedFields[] = $inversedRelationships[$doctrineMetadata->name];
-        }
-
-        return $transformedFields;
+        return $transformedEntity;
     }
 
     public function reverseTransform($ngAdminConfiguration)
@@ -112,7 +113,7 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
                 continue;
             }
 
-            $inversedRelationships[$mapping['sourceEntity']] = [
+            $inversedRelationships[$mapping['fieldName']] = [
                 'type' => 'referenced_list',
                 'name' => $mappedEntity,
                 'referencedEntity' => [

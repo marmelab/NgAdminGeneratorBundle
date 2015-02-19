@@ -9,43 +9,47 @@ class EntityReferencedFieldNameToMeaningfulNameTransformerTest extends \PHPUnit_
     public function testShouldRenameReferencedFieldToBestChoiceForReferenceFields()
     {
         $entity = [
-            'post_id' => [
-                'type' => 'reference',
-                'name' => 'post_id',
-                'referencedEntity' => [
-                    'name' => 'post',
-                    'class' => 'Lemon\RestDemoBundle\Entity\Post',
+            'fields' => [
+                'post_id' => [
+                    'type' => 'reference',
+                    'name' => 'post_id',
+                    'referencedEntity' => [
+                        'name' => 'post',
+                        'class' => 'Lemon\RestDemoBundle\Entity\Post',
+                    ],
+                    'referencedField' => 'id'
                 ],
-                'referencedField' => 'id'
-            ]
+            ],
         ];
 
         $emMock = $this->getEntityManagerMock('Lemon\RestDemoBundle\Entity\Post', ['id', 'title']);
         $transformer = new EntityReferencedFieldNameToMeaningfulNameTransformer($emMock);
         $transformedEntity = $transformer->transform($entity);
 
-        $this->assertEquals($transformedEntity['post_id']['referencedField'], 'title');
+        $this->assertEquals($transformedEntity['fields']['post_id']['referencedField'], 'title');
     }
 
     public function testShouldRenameReferencedFieldToBestChoiceForReferenceManyFields()
     {
         $entity = [
-            'tags' => [
-                'type' => 'reference_many',
-                'name' => 'tags',
-                'referencedEntity' => [
-                    'name' => 'tag',
-                    'class' => 'Lemon\RestDemoBundle\Entity\Tag',
+            'fields' => [
+                'tags' => [
+                    'type' => 'reference_many',
+                    'name' => 'tags',
+                    'referencedEntity' => [
+                        'name' => 'tag',
+                        'class' => 'Lemon\RestDemoBundle\Entity\Tag',
+                    ],
+                    'referencedField' => 'id'
                 ],
-                'referencedField' => 'id'
-            ]
+            ],
         ];
 
         $emMock = $this->getEntityManagerMock('Lemon\RestDemoBundle\Entity\Tag', ['id', 'name']);
         $transformer = new EntityReferencedFieldNameToMeaningfulNameTransformer($emMock);
         $transformedEntity = $transformer->transform($entity);
 
-        $this->assertEquals($transformedEntity['tags']['referencedField'], 'name');
+        $this->assertEquals($transformedEntity['fields']['tags']['referencedField'], 'name');
     }
 
     private function getEntityManagerMock($entityClass, array $fieldNames = [])

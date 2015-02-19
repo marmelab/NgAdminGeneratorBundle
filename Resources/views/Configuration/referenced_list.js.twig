@@ -2,7 +2,7 @@
                         .targetEntity(nga.entity('{{ field.referencedEntity.name }}'))
                         .targetReferenceField('{{ field.referencedField }}')
                         .targetFields([
-{% for field in entities[field.referencedEntity.name] -%}
+{% for field in entities[field.referencedEntity.name].fields -%}
 {% if field.type != 'reference' and field.type != 'referenced_list' %}
                             {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:field.js.twig" with {
                                 "view": view,

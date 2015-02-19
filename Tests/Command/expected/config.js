@@ -49,7 +49,6 @@
                         .targetFields([
                             nga.field('id', 'number'),
                             nga.field('body', 'text'),
-                            nga.field('created_at', 'date'),
 
                     ]),
                 ]);
@@ -68,7 +67,6 @@
                         .targetFields([
                             nga.field('id', 'number'),
                             nga.field('body', 'text'),
-                            nga.field('created_at', 'date'),
 
                     ]),
                 ]);
@@ -86,14 +84,15 @@
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
-                    nga.field('created_at', 'date'),
+                    nga.field('post_id', 'reference')
+                        .targetEntity(nga.entity('post'))
+                        .targetField(nga.field('title')),
                 ]);
 
             comment.listView()
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
-                    nga.field('created_at', 'date'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
                         .targetField(nga.field('title')),
@@ -103,7 +102,6 @@
             comment.creationView()
                 .fields([
                     nga.field('body', 'text'),
-                    nga.field('created_at', 'date'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
                         .targetField(nga.field('title')),
@@ -113,7 +111,6 @@
                 .fields([
                     nga.field('id', 'number').readOnly(),
                     nga.field('body', 'text'),
-                    nga.field('created_at', 'date'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
                         .targetField(nga.field('title')),
@@ -123,7 +120,6 @@
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
-                    nga.field('created_at', 'date'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
                         .targetField(nga.field('title')),
