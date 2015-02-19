@@ -37,7 +37,9 @@
 
             post.editionView()
                 .fields([
-                    nga.field('id', 'number').readOnly(),
+                    nga.field('id', 'number')
+                        .editable(false)
+                        .isDetailLink(false),
                     nga.field('title', 'string'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
@@ -55,7 +57,8 @@
 
             post.showView()
                 .fields([
-                    nga.field('id', 'number'),
+                    nga.field('id', 'number')
+                        .isDetailLink(false),
                     nga.field('title', 'string'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
@@ -109,7 +112,9 @@
 
             comment.editionView()
                 .fields([
-                    nga.field('id', 'number').readOnly(),
+                    nga.field('id', 'number')
+                        .editable(false)
+                        .isDetailLink(false),
                     nga.field('body', 'text'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
@@ -118,7 +123,8 @@
 
             comment.showView()
                 .fields([
-                    nga.field('id', 'number'),
+                    nga.field('id', 'number')
+                        .isDetailLink(false),
                     nga.field('body', 'text'),
                     nga.field('post_id', 'reference')
                         .targetEntity(nga.entity('post'))
@@ -154,13 +160,16 @@
 
             tag.editionView()
                 .fields([
-                    nga.field('id', 'number').readOnly(),
+                    nga.field('id', 'number')
+                        .editable(false)
+                        .isDetailLink(false),
                     nga.field('name', 'string'),
                 ]);
 
             tag.showView()
                 .fields([
-                    nga.field('id', 'number'),
+                    nga.field('id', 'number')
+                        .isDetailLink(false),
                     nga.field('name', 'string'),
                 ]);
 

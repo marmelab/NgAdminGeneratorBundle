@@ -1,2 +1,7 @@
         nga.field('{{ field.name }}', '{{ field.type }}')
-            {%- if not fromReference|default(false) and field.name == 'id' and view == 'edition' %}.readOnly(){% endif %}
+{% if not fromReference|default(false) and field.name == 'id' -%}
+    {% if view == 'edition' %}                        .editable(false)
+{% endif %}
+    {% if view == 'edition' or view == 'show' %}
+                    .isDetailLink(false){% endif %}
+{%- endif %}
