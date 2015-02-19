@@ -31,6 +31,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals([
             'class' => 'Acme\FooBundle\Entity\Comment',
+            'name' => 'comment',
             'fields' => [
                 'title' => [
                     'name' => 'title',
@@ -90,6 +91,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals([
             'class' => 'Acme\FooBundle\Entity\Comment',
+            'name' => 'comment',
             'fields' => [
                 'post_id' => [
                     'name' => 'post_id',
@@ -121,6 +123,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals([
             'class' => 'Acme\FooBundle\Entity\Post',
+            'name' => 'post',
             'fields' => [
                 'post' => [
                     'name' => 'comments',
@@ -154,6 +157,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals([
             'class' => 'Acme\FooBundle\Entity\Comment',
+            'name' => 'comment',
             'fields' => [
                 'tags' => [
                     'name' => 'tags',

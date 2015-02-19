@@ -39,6 +39,9 @@
             var nga = NgAdminConfigurationProvider;
             var post = nga.entity('post');
 
+            post.menuView()
+                .icon('<span class="glyphicon glyphicon-pencil"></span>');
+
             post.dashboardView()
                 .fields([
                     nga.field('id', 'number'),
@@ -114,6 +117,9 @@
             var nga = NgAdminConfigurationProvider;
             var comment = nga.entity('comment');
 
+            comment.menuView()
+                .icon('<span class="glyphicon glyphicon-comment"></span>');
+
             comment.dashboardView()
                 .fields([
                     nga.field('id', 'number'),
@@ -170,6 +176,9 @@
         $provide.factory("TagAdmin", function() {
             var nga = NgAdminConfigurationProvider;
             var tag = nga.entity('tag');
+
+            tag.menuView()
+                .icon('<span class="glyphicon glyphicon-tags"></span>');
 
             tag.dashboardView()
                 .fields([
