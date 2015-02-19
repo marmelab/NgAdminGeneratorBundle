@@ -1,4 +1,4 @@
-        nga.field('{{ field.name }}', '{{ field.type }}')
+        nga.field('{{ field.name }}'{% if field.type != 'string' %}, '{{ field.type }}'{% endif %})
 {% if not fromReference|default(false) and field.name == 'id' -%}
     {% if view == 'edition' %}                        .editable(false)
 {% endif %}

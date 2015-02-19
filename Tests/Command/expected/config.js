@@ -45,14 +45,14 @@
             post.dashboardView()
                 .fields([
                     nga.field('id', 'number'),
-                    nga.field('title', 'string'),
+                    nga.field('title'),
                     nga.field('body', 'text'),
                 ]);
 
             post.listView()
                 .fields([
                     nga.field('id', 'number'),
-                    nga.field('title', 'string'),
+                    nga.field('title'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
@@ -62,7 +62,7 @@
 
             post.creationView()
                 .fields([
-                    nga.field('title', 'string'),
+                    nga.field('title'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
@@ -74,7 +74,7 @@
                     nga.field('id', 'number')
                         .editable(false)
                         .isDetailLink(false),
-                    nga.field('title', 'string'),
+                    nga.field('title'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
@@ -93,7 +93,7 @@
                 .fields([
                     nga.field('id', 'number')
                         .isDetailLink(false),
-                    nga.field('title', 'string'),
+                    nga.field('title'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
@@ -183,19 +183,19 @@
             tag.dashboardView()
                 .fields([
                     nga.field('id', 'number'),
-                    nga.field('name', 'string'),
+                    nga.field('name'),
                 ]);
 
             tag.listView()
                 .fields([
                     nga.field('id', 'number'),
-                    nga.field('name', 'string'),
+                    nga.field('name'),
                 ])
                 .listActions(['show', 'edit', 'delete']);
 
             tag.creationView()
                 .fields([
-                    nga.field('name', 'string'),
+                    nga.field('name'),
                 ]);
 
             tag.editionView()
@@ -203,14 +203,14 @@
                     nga.field('id', 'number')
                         .editable(false)
                         .isDetailLink(false),
-                    nga.field('name', 'string'),
+                    nga.field('name'),
                 ]);
 
             tag.showView()
                 .fields([
                     nga.field('id', 'number')
                         .isDetailLink(false),
-                    nga.field('name', 'string'),
+                    nga.field('name'),
                 ]);
 
             return tag;
