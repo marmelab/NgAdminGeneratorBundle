@@ -13,9 +13,6 @@
                     nga.field('id', 'number'),
                     nga.field('title', 'string'),
                     nga.field('body', 'text'),
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
                 ]);
 
             post.listView()
@@ -90,9 +87,6 @@
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
                     nga.field('created_at', 'date'),
-                    nga.field('post_id', 'reference')
-                        .targetEntity(nga.entity('post'))
-                        .targetField(nga.field('title')),
                 ]);
 
             comment.listView()

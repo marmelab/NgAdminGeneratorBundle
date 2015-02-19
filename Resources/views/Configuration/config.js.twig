@@ -10,24 +10,39 @@
             var {{ entityName }} = nga.entity('{{ entityName }}');
 
             {{ entityName }}.dashboardView()
-                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with { "view": "dashboard" } %}
+                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
+                    "view": "dashboard",
+                    "fields": fields[0:3]
+                } only %}
                 ]);
 
             {{ entityName }}.listView()
-                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with { "view": "list" } %}
+                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
+                    "view": "list",
+                    "fields": fields
+                } %}
                 ])
                 .listActions(['show', 'edit', 'delete']);
 
             {{ entityName }}.creationView()
-                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with { "view": "creation" } %}
+                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
+                    "view": "creation",
+                    "fields": fields
+                } %}
                 ]);
 
             {{ entityName }}.editionView()
-                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with { "view": "edition" } %}
+                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
+                    "view": "edition",
+                    "fields": fields
+                } %}
                 ]);
 
             {{ entityName }}.showView()
-                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with { "view": "show" } %}
+                .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
+                    "view": "show",
+                    "fields": fields
+                } %}
                 ]);
 
             return {{ entityName }};
