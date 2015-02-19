@@ -34,6 +34,7 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
         foreach ($doctrineMetadata->fieldMappings as $fieldMapping) {
             $field = [
                 'name' => $fieldMapping['fieldName'],
+                'class' => $doctrineMetadata->name, // @TODO: move this data outside field mappings
             ];
 
             // if field is in relationship, we'll deal it later
@@ -42,7 +43,7 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
             }
 
             $field['type'] = self::$typeMapping[$fieldMapping['type']];
-            $transformedFields[] = $field;
+            $transformedFields[$field['name']] = $field;
         }
 
         // Deal with all relationships
@@ -50,10 +51,7 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
 
         // check for inversed relationships
         $inversedRelationships = $this->getInversedRelationships($doctrineMetadata);
-
-        if (isset($inversedRelationships[$doctrineMetadata->name])) {
-            $transformedFields[] = $inversedRelationships[$doctrineMetadata->name];
-        }
+        $transformedFields = array_merge($transformedFields, $inversedRelationships);
 
         return $transformedFields;
     }
@@ -112,7 +110,7 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
                 continue;
             }
 
-            $inversedRelationships[$mapping['sourceEntity']] = [
+            $inversedRelationships[$mapping['fieldName']] = [
                 'type' => 'referenced_list',
                 'name' => $mappedEntity,
                 'referencedEntity' => [

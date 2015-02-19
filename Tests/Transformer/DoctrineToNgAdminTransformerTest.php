@@ -30,8 +30,16 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
         $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
         $this->assertEquals([
-            ['name' => 'title', 'type' => 'string'],
-            ['name' => 'body', 'type' => 'text'],
+            'title' => [
+                'name' => 'title',
+                'type' => 'string',
+                'class' => 'Acme\FooBundle\Entity\Comment',
+            ],
+            'body' => [
+                'name' => 'body',
+                'type' => 'text',
+                'class' => 'Acme\FooBundle\Entity\Comment',
+            ],
         ], $ngAdminConfiguration);
     }
 
@@ -41,7 +49,7 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
         $this->doctrineMetadataMock->fieldMappings = [['fieldName' => 'myField', 'type' => $doctrineType]];
         $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
-        $this->assertEquals($expectedNgAdminType, $ngAdminConfiguration[0]['type']);
+        $this->assertEquals($expectedNgAdminType, current($ngAdminConfiguration)['type']);
     }
 
     public function nonReferenceTypeProvider()
@@ -101,20 +109,23 @@ class DoctrineToNgAdminTransformerTest extends \PHPUnit_Framework_TestCase
                 'sourceEntity' => 'Acme\FooBundle\Entity\Post',
                 'targetEntity' => 'Acme\FooBundle\Entity\Comment',
                 'mappedBy' => 'post',
+                'fieldName' => 'post',
             ],
         ];
 
         $ngAdminConfiguration = $this->transformer->transform($this->doctrineMetadataMock);
 
-        $this->assertEquals([[
-            'name' => 'comments',
-            'referencedEntity' => [
-                'name' => 'comment',
-                'class' => 'Acme\FooBundle\Entity\Comment',
-            ],
-            'referencedField'=> 'post_id',
-            'type' => 'referenced_list',
-        ]], $ngAdminConfiguration);
+        $this->assertEquals([
+            'post' => [
+                'name' => 'comments',
+                'referencedEntity' => [
+                    'name' => 'comment',
+                    'class' => 'Acme\FooBundle\Entity\Comment',
+                ],
+                'referencedField'=> 'post_id',
+                'type' => 'referenced_list',
+            ]
+        ], $ngAdminConfiguration);
     }
 
     public function testShouldTransformManyToManyRelationshipToReferenceManyField()

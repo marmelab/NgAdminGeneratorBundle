@@ -5,6 +5,7 @@ services:
             -   # Transformers: be careful, order matters!
                 - @marmelab.ng_admin_generator.transformer.doctrine_to_ngadmin_transformer
                 - @marmelab.ng_admin_generator.entity_referenced_field_name_to_meaningful_name
+                - @marmelab.ng_admin_generator.entity_to_entity_without_excluded_fields
             - @doctrine.orm.entity_manager
             - @twig
 
@@ -17,3 +18,9 @@ services:
         public: false
         arguments:
             - @doctrine.orm.entity_manager
+
+    marmelab.ng_admin_generator.entity_to_entity_without_excluded_fields:
+        class: marmelab\NgAdminGeneratorBundle\Transformer\EntityToEntityWithoutExcludedFieldsTransformer
+        public: false
+        arguments:
+            - @jms_serializer
