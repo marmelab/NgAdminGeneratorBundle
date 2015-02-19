@@ -37,7 +37,7 @@
 
             post.editionView()
                 .fields([
-                    nga.field('id', 'number'),
+                    nga.field('id', 'number').readOnly(),
                     nga.field('title', 'string'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
@@ -111,7 +111,7 @@
 
             comment.editionView()
                 .fields([
-                    nga.field('id', 'number'),
+                    nga.field('id', 'number').readOnly(),
                     nga.field('body', 'text'),
                     nga.field('created_at', 'date'),
                     nga.field('post_id', 'reference')
@@ -158,7 +158,7 @@
 
             tag.editionView()
                 .fields([
-                    nga.field('id', 'number'),
+                    nga.field('id', 'number').readOnly(),
                     nga.field('name', 'string'),
                 ]);
 

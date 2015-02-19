@@ -4,6 +4,10 @@
                         .targetFields([
 {% for field in entities[field.referencedEntity.name] -%}
 {% if field.type != 'reference' and field.type != 'referenced_list' %}
-                            {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:field.js.twig" %}{% endspaceless %}
+                            {% spaceless %}{% include "marmelabNgAdminGeneratorBundle:Configuration:field.js.twig" with {
+                                "view": view,
+                                "field": field,
+                                "fromReference": true
+                            } only %}{% endspaceless %}
 {%- endif %}{{ loop.last ? "" : "," }}
 {% endfor %}                    ])
