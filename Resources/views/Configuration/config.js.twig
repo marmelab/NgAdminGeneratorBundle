@@ -40,6 +40,9 @@
             var nga = NgAdminConfigurationProvider;
             var {{ entityName }} = nga.entity('{{ entityName }}');
 
+            {{ entityName }}.menuView()
+                .icon('<span class="glyphicon glyphicon-{{ entity.icon }}"></span>');
+
             {{ entityName }}.dashboardView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "dashboard",

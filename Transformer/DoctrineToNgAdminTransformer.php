@@ -32,6 +32,7 @@ class DoctrineToNgAdminTransformer implements TransformerInterface
 
         $transformedEntity = [
             'class' => $doctrineMetadata->name,
+            'name' => $this->getEntityName($doctrineMetadata->name),
             'fields' => [],
         ];
 

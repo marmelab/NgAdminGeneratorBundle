@@ -1,0 +1,51 @@
+parameters:
+    ng_admin_generator.icons:
+        usd:
+            - rate
+            - exchange
+            - currency
+        envelope:
+            - message
+            - mail
+            - notification
+        music:
+            - sound
+            - music
+            - mp3
+        user:
+            - member
+            - user
+            - account
+        film:
+            - movie
+            - film
+            - video
+            - media
+        tags:
+            - tag
+            - label
+            - meta
+        picture:
+            - photo
+            - picture
+            - image
+        calendar:
+            - calendar
+            - diary
+            - appointment
+            - meeting
+            - event
+        globe:
+            - place
+            - location
+            - address
+        earphone:
+            - contact
+            - telephone
+            - phone
+        pencil:
+            - post
+            - topic
+            - content
+        comment:
+            - comment
