@@ -2,5 +2,18 @@ services:
     marmelab.ng_admin_generator.configuration_generator:
         class: marmelab\NgAdminGeneratorBundle\Generator\ConfigurationGenerator
         arguments:
+            -   # Transformers: be careful, order matters!
+                - @marmelab.ng_admin_generator.transformer.doctrine_to_ngadmin_transformer
+                - @marmelab.ng_admin_generator.entity_referenced_field_name_to_meaningful_name
             - @doctrine.orm.entity_manager
             - @twig
+
+    marmelab.ng_admin_generator.transformer.doctrine_to_ngadmin_transformer:
+        class: marmelab\NgAdminGeneratorBundle\Transformer\DoctrineToNgAdminTransformer
+        public: false
+
+    marmelab.ng_admin_generator.entity_referenced_field_name_to_meaningful_name:
+        class: marmelab\NgAdminGeneratorBundle\Transformer\EntityReferencedFieldNameToMeaningfulNameTransformer
+        public: false
+        arguments:
+            - @doctrine.orm.entity_manager

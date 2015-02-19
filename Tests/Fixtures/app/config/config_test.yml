@@ -16,3 +16,10 @@ framework:
     templating:      { engines: ['twig'] }
     validation:      { enable_annotations: true }
     test: ~
+
+lemon_rest:
+    envelope: Lemon\RestBundle\Object\Envelope\FlattenedEnvelope
+    mappings:
+        - { name: post, class: FooBundle\Entity\Post }
+        - { name: comment, class: FooBundle\Entity\Comment }
+        - { name: tag, class: FooBundle\Entity\Tag }
