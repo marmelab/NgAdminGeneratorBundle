@@ -1,1 +1,2 @@
         nga.field('{{ field.name }}', '{{ field.type }}')
+            {%- if not fromReference|default(false) and field.name == 'id' and view == 'edition' %}.readOnly(){% endif %}
