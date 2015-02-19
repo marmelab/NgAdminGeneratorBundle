@@ -3,9 +3,8 @@
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\DataTransformerInterface;
 
-class EntityReferencedFieldNameToMeaningfulNameTransformer implements DataTransformerInterface
+class EntityReferencedFieldNameToMeaningfulNameTransformer implements TransformerInterface
 {
     private static $bestChoices = [
         'name',

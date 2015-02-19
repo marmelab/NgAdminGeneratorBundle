@@ -15,6 +15,7 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Lemon\RestBundle\LemonRestBundle(),
             new marmelab\NgAdminGeneratorBundle\marmelabNgAdminGeneratorBundle(),
+            new FooBundle\FooBundle(),
         );
     }
 

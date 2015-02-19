@@ -3,25 +3,21 @@
 namespace marmelab\NgAdminGeneratorBundle\Generator;
 
 use Doctrine\ORM\EntityManagerInterface;
-use marmelab\NgAdminGeneratorBundle\Transformer\EntityReferencedFieldNameToMeaningfulNameTransformer;
-use marmelab\NgAdminGeneratorBundle\Transformer\DoctrineToNgAdminTransformer;
-use Symfony\Component\Form\DataTransformerInterface;
+use marmelab\NgAdminGeneratorBundle\Transformer\TransformerInterface;
 
 class ConfigurationGenerator
 {
     private $em;
     private $twig;
+
+    /** @var TransformerInterface[] */
     private $transformers = [];
 
-    public function __construct(EntityManagerInterface $em, \Twig_Environment $twig)
+    public function __construct(array $transformers = [], EntityManagerInterface $em, \Twig_Environment $twig)
     {
+        $this->transformers = $transformers;
         $this->em = $em;
         $this->twig = $twig;
-    }
-
-    public function addTransformer(DataTransformerInterface $transformer)
-    {
-        $this->transformers[] = $transformer;
     }
 
     public function generateConfiguration(array $classNames)
