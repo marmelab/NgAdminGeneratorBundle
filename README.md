@@ -1,9 +1,9 @@
 NgAdminGeneratorBundle [![Build Status](https://travis-ci.org/marmelab/NgAdminGeneratorBundle.png?branch=master)](https://travis-ci.org/marmelab/NgAdminGeneratorBundle)
 ======================
 
-You're a fan of [StanLemonRestBundle](#) because of its facility to create a REST API based on your entities?
-You starred [ng-admin](#) as it helped you to create a fully functional administration panel with a single configuration file?
-You will then love NgAdminGeneratorBundle, which bootstraps ng-admin based on your API structure!
+You're a fan of [StanLemonRestBundle](https://github.com/stanlemon/rest-bundle) because it makes REST APIs based on Doctrine entities a piece of cake?
+You starred [ng-admin](https://github.com/marmelab/ng-admin) because you love the idea of a JavaScript-powered administration panel consuming a REST API?
+Then, you will love NgAdminGeneratorBundle, the Symfony2 bundle that  bootstraps ng-admin based on a Doctrine-powered REST API!
 
 ## Installation
 
@@ -11,181 +11,173 @@ Using this bundle in your own project is pretty straightforward, thanks to compo
 
 `composer require marmelab/NgAdminGeneratorBundle`
 
-Then, register it to your `AppKernel.php` file:
+Then, register it to your `AppKernel.php` file. The NgAdminGeneratorBundle should only be used in development:
 
 ``` php
 class AppKernel extends Kernel
 {
     public function registerBundles()
     {
-        $bundles = array(
-            // ...
-            new \marmelab\NgAdminGeneratorBundle\marmelabNgAdminGeneratorBundle(),
-        );
+        // ...
+        if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+            $bundles[] = new \marmelab\NgAdminGeneratorBundle\marmelabNgAdminGeneratorBundle();
+        }
+        // ...
     }
 }
 ```
-
-As you will generate your configuration only in development mode, no need to add a small overhead in production registering
-the bundle for all your environments.
 
 No more configuration, you are now ready to go!
 
 ## Generating your ng-admin configuration
 
-This bundle just adds the following command to your application:
+This bundle just adds the `ng-admin:configuration:generate` command to your application. By default, it outputs a JavaScript configuration based on [the REST API defined by StanLemonRestBundle](https://github.com/stanlemon/rest-bundle/blob/master/Resources/doc/index.md#adding-support-for-your-doctrine-entities) into STDOUT. You are free to redirect STDOUT into the file of your choice:
 
-`./app/console ng-admin:configuration:generate`
+```
+./app/console ng-admin:configuration:generate > public/js/ng-admin-config.js
+```
 
-By default, it outputs configuration into standard output. But you are free to redirect it into file of your choice:
-
-`./app/console ng-admin:conf:generate > public/js/ng-admin-config.js`
-
-Note that thanks to Symfony2 Console component, you can truncate parts of the command, such as `config` instead of 
-`configuration`.
+Tip: Thanks to the Symfony2 Console component, you can truncate parts of the command name and call the `ng-admin:c:g` command!
 
 ## Configuration sample
 
-Here is a sample of auto-generated configuration, based on [stanlemon/rest-demo-app](https://github.com/stanlemon/rest-demo-app)
-demo application. This application sets up same domain as the official [ng-admin demonstration](#). Generator simply uses
-[entities mapping](https://github.com/stanlemon/rest-demo-app/tree/master/src/Lemon/RestDemoBundle/Entity) to better know
-which field to use.
-
-Comments are addition for this README, and won't be added automatically:
+Here is a sample of an auto-generated configuration, based on the [stanlemon/rest-demo-app](https://github.com/stanlemon/rest-demo-app)
+demo application. This application sets up the same entities as the official [ng-admin demo app](http://ng-admin.marmelab.com/), i.e. Posts, Comments, and Tags. The generator simply uses [entity mapping](https://github.com/stanlemon/rest-demo-app/tree/master/src/Lemon/RestDemoBundle/Entity) to better know
+which fields to use.
 
 ``` js
-    var app = angular.module('myApp', ['ng-admin']);
+var app = angular.module('myApp', ['ng-admin']);
 
-    // Deal with query parameters expected by StanLemon bundle
-    app.config(function(RestangularProvider) {
-        RestangularProvider.addFullRequestInterceptor(function(element, operation, what, url, headers, params) {
-            if (operation == "getList") {
-                // custom pagination params
-                params._start = (params._page - 1) * params._perPage;
-                params._end = params._page * params._perPage;
-                delete params._page;
-                delete params._perPage;
+// Deal with query parameters expected by StanLemon bundle
+app.config(function(RestangularProvider) {
+    RestangularProvider.addFullRequestInterceptor(function(element, operation, what, url, headers, params) {
+        if (operation == "getList") {
+            // custom pagination params
+            params._start = (params._page - 1) * params._perPage;
+            params._end = params._page * params._perPage;
+            delete params._page;
+            delete params._perPage;
 
-                // custom sort params
-                if (params._sortField) {
-                    params._orderBy = params._sortField;
-                    params._orderDir = params._sortDir;
-                    delete params._sortField;
-                    delete params._sortDir;
-                }
-
-                // custom filters
-                if (params._filters) {
-                    for (var filter in params._filters) {
-                        params[filter] = params._filters[filter];
-                    }
-                    delete params._filters;
-                }
+            // custom sort params
+            if (params._sortField) {
+                params._orderBy = params._sortField;
+                params._orderDir = params._sortDir;
+                delete params._sortField;
+                delete params._sortDir;
             }
 
-            return { params: params };
-        });
+            // custom filters
+            if (params._filters) {
+                for (var filter in params._filters) {
+                    params[filter] = params._filters[filter];
+                }
+                delete params._filters;
+            }
+        }
+
+        return { params: params };
     });
-    
-    /* Define a `config` block for each entity, allowing to split configuration
-       across several files. */
-    app.config(function($provide, NgAdminConfigurationProvider) {
-        $provide.factory("PostAdmin", function() {
-            var nga = NgAdminConfigurationProvider;
-            var post = nga.entity('post');
+});
 
-            // Dashboard (as list) won't display referenced list of items.
-            post.dashboardView()
-                .fields([
-                    nga.field('id', 'number'),
-                    nga.field('title', 'string'),
-                    nga.field('body', 'text'),
-                    // We limit to 3 number of fields displayed on dashboard
-                ]);
+/* Define a `config` block for each entity, allowing to split configuration
+   across several files. */
+app.config(function($provide, NgAdminConfigurationProvider) {
+    $provide.factory("PostAdmin", function() {
+        var nga = NgAdminConfigurationProvider;
+        var post = nga.entity('post');
 
-            post.listView()
-                .fields([
-                    nga.field('id', 'number'),
-                    nga.field('title', 'string'),
-                    nga.field('body', 'text'),
-                    // Take more meaningful field. Here, use `name` instead of `id`
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
-                ])
-                .listActions(['show', 'edit', 'delete']);
+        // Dashboard (as list) won't display referenced list of items.
+        post.dashboardView()
+            .fields([
+                nga.field('id', 'number'),
+                nga.field('title', 'string'),
+                nga.field('body', 'text'),
+                // We limit to 3 number of fields displayed on dashboard
+            ]);
 
-            post.creationView()
-                .fields([
-                    // Do not display id: we don't have any yet
-                    nga.field('title', 'string'),
-                    nga.field('body', 'text'),
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
-                    // No referenced_list either, as that's a brand new entity
-                ]);
+        post.listView()
+            .fields([
+                nga.field('id', 'number'),
+                nga.field('title', 'string'),
+                nga.field('body', 'text'),
+                // Take more meaningful field. Here, use `name` instead of `id`
+                nga.field('tags', 'reference_many')
+                    .targetEntity(nga.entity('tag'))
+                    .targetField(nga.field('name')),
+            ])
+            .listActions(['show', 'edit', 'delete']);
 
-            post.editionView()
-                .fields([
-                    nga.field('id', 'number').readOnly(), // don't modify id
-                    nga.field('title', 'string'),
-                    nga.field('body', 'text'),
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
-                    nga.field('comments', 'referenced_list')
-                        .targetEntity(nga.entity('comment'))
-                        .targetReferenceField('post_id')
-                        .targetFields([
-                            nga.field('id', 'number'),
-                            nga.field('body', 'text'),
-                            nga.field('created_at', 'date'),
+        post.creationView()
+            .fields([
+                // Do not display id: we don't have any yet
+                nga.field('title', 'string'),
+                nga.field('body', 'text'),
+                nga.field('tags', 'reference_many')
+                    .targetEntity(nga.entity('tag'))
+                    .targetField(nga.field('name')),
+                // No referenced_list either, as that's a brand new entity
+            ]);
 
-                    ]),
-                ]);
+        post.editionView()
+            .fields([
+                nga.field('id', 'number').readOnly(), // don't modify id
+                nga.field('title', 'string'),
+                nga.field('body', 'text'),
+                nga.field('tags', 'reference_many')
+                    .targetEntity(nga.entity('tag'))
+                    .targetField(nga.field('name')),
+                nga.field('comments', 'referenced_list')
+                    .targetEntity(nga.entity('comment'))
+                    .targetReferenceField('post_id')
+                    .targetFields([
+                        nga.field('id', 'number'),
+                        nga.field('body', 'text'),
+                        nga.field('created_at', 'date'),
 
-            /* To ease configuration per view, we repeat every field every time. If you want to display same fields
-               across views, you can use for instance `post.editView().fields()` to get edition fields. */
-            post.showView()
-                .fields([
-                    nga.field('id', 'number'),
-                    nga.field('title', 'string'),
-                    nga.field('body', 'text'),
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
-                    nga.field('comments', 'referenced_list')
-                        .targetEntity(nga.entity('comment'))
-                        .targetReferenceField('post_id')
-                        .targetFields([
-                            nga.field('id', 'number'),
-                            nga.field('body', 'text'),
-                            nga.field('created_at', 'date'),
+                ]),
+            ]);
 
-                    ]),
-                ]);
+        /* To ease configuration per view, we repeat every field every time. If you want to display same fields
+           across views, you can use for instance `post.editView().fields()` to get edition fields. */
+        post.showView()
+            .fields([
+                nga.field('id', 'number'),
+                nga.field('title', 'string'),
+                nga.field('body', 'text'),
+                nga.field('tags', 'reference_many')
+                    .targetEntity(nga.entity('tag'))
+                    .targetField(nga.field('name')),
+                nga.field('comments', 'referenced_list')
+                    .targetEntity(nga.entity('comment'))
+                    .targetReferenceField('post_id')
+                    .targetFields([
+                        nga.field('id', 'number'),
+                        nga.field('body', 'text'),
+                        nga.field('created_at', 'date'),
 
-            return post;
-        });
+                ]),
+            ]);
+
+        return post;
     });
+});
 
-    // Same config block for comments
-    // Same config block for tags
+// Same config block for comments
+// Same config block for tags
 
-    app.config(function(NgAdminConfigurationProvider, PostAdminProvider, CommentAdminProvider, TagAdminProvider) {
-        var admin = NgAdminConfigurationProvider
-            .application('')
-            .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/')
+app.config(function(NgAdminConfigurationProvider, PostAdminProvider, CommentAdminProvider, TagAdminProvider) {
+    var admin = NgAdminConfigurationProvider
+        .application('')
+        .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/')
 
-        admin
-            .addEntity(PostAdminProvider.$get())
-            .addEntity(CommentAdminProvider.$get())
-            .addEntity(TagAdminProvider.$get())
-        ;
+    admin
+        .addEntity(PostAdminProvider.$get())
+        .addEntity(CommentAdminProvider.$get())
+        .addEntity(TagAdminProvider.$get())
+    ;
 
-        NgAdminConfigurationProvider.configure(admin);
-    });
+    NgAdminConfigurationProvider.configure(admin);
+});
 ```
 
 ## Contributing
