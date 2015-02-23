@@ -184,18 +184,21 @@
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('name'),
+                    nga.field('created_by'),
                 ]);
 
             tag.listView()
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('name'),
+                    nga.field('created_by'),
                 ])
                 .listActions(['show', 'edit', 'delete']);
 
             tag.creationView()
                 .fields([
                     nga.field('name'),
+                    nga.field('created_by'),
                 ]);
 
             tag.editionView()
@@ -204,6 +207,7 @@
                         .editable(false)
                         .isDetailLink(false),
                     nga.field('name'),
+                    nga.field('created_by'),
                 ]);
 
             tag.showView()
@@ -211,6 +215,7 @@
                     nga.field('id', 'number')
                         .isDetailLink(false),
                     nga.field('name'),
+                    nga.field('created_by'),
                 ]);
 
             return tag;
