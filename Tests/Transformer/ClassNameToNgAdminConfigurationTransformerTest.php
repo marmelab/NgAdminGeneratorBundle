@@ -11,7 +11,8 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
     public function testTransformShouldAddClassFqdnAndEntityName()
     {
         $serializer = $this->getSerializerMock([[]]);
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer);
+        $guesser = $this->getReferencedFieldGuesserMock();
+        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $guesser);
 
         $transformedData = $transformer->transform($this->className);
         $this->assertEquals([
@@ -30,7 +31,9 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
                 ],
             ],
         ]]);
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer);
+        $guesser = $this->getReferencedFieldGuesserMock();
+
+        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $guesser);
 
         $transformedData = $transformer->transform($this->className);
         $this->assertEquals([
@@ -51,7 +54,8 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
                 ]
             ],
         ]]);
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer);
+        $guesser = $this->getReferencedFieldGuesserMock();
+        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $guesser);
 
         $transformedData = $transformer->transform($this->className);
         $this->assertEquals([
@@ -87,89 +91,22 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
                 ],
             ],
         ]);
+        $guesser = $this->getReferencedFieldGuesserMock('title');
 
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer);
+        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $guesser);
 
         $transformedData = $transformer->transform($this->className);
         $this->assertEquals([[
             'name' => 'comments',
             'type' => 'referenced_list',
-            'referencedEntity' => 'comment',
-            'referencedField' => 'post_id',
-        ]], $transformedData['fields']);
-    }
-
-    public function testShouldTransformIdCollectionIntoReferenceManyFieldWithBestReferencedField()
-    {
-        $serializer = $this->getSerializerMock([
-            $this->className => [
-                'tags' => (object) [
-                    'type' => [
-                        'name' => 'Lemon\RestBundle\Serializer\IdCollection',
-                        'params' => [
-                            ['name' => 'Acme\FooBundle\Entity\Tag'],
-                        ]
-                    ],
-                    'reflection' => (object) [
-                        'name' => 'post',
-                    ]
-                ],
+            'referencedEntity' => [
+                'name' => 'comment',
+                'class' => 'Acme\FooBundle\Entity\Comment',
             ],
-            'Acme\FooBundle\Entity\Tag' => [
-                'name' => (object) [
-                    'type' => [
-                        'name' => 'string',
-                    ],
-                ],
-            ]
-        ]);
-
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, ['title', 'name']);
-
-        $transformedData = $transformer->transform($this->className);
-        $this->assertEquals([[
-            'name' => 'tags',
-            'type' => 'reference_many',
-            'referencedEntity' => 'tag',
-            'referencedField' => 'name',
+            'referencedField' => 'title',
         ]], $transformedData['fields']);
     }
 
-    public function testShouldTransformIdCollectionIntoReferenceManyFieldWithIdIfNoBetterColumnFound()
-    {
-        $serializer = $this->getSerializerMock([
-            $this->className => [
-                'tags' => (object) [
-                    'type' => [
-                        'name' => 'Lemon\RestBundle\Serializer\IdCollection',
-                        'params' => [
-                            ['name' => 'Acme\FooBundle\Entity\Tag'],
-                        ]
-                    ],
-                    'reflection' => (object) [
-                        'name' => 'post',
-                    ]
-                ],
-            ],
-            'Acme\FooBundle\Entity\Tag' => [
-                'name' => (object) [
-                    'type' => [
-                        'name' => 'string',
-                    ],
-                ],
-            ]
-        ]);
-
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, ['title']);
-
-        $transformedData = $transformer->transform($this->className);
-        $this->assertEquals([[
-            'name' => 'tags',
-            'type' => 'reference_many',
-            'referencedEntity' => 'tag',
-            'referencedField' => 'id',
-        ]], $transformedData['fields']);
-    }
 
     private function getSerializerMock(array $propertyMetadatas)
     {
@@ -200,5 +137,18 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
             ->willReturn($metadataFactory);
 
         return $serializer;
+    }
+
+    private function getReferencedFieldGuesserMock($guessedField = null)
+    {
+        $guesser = $this->getMockBuilder('marmelab\NgAdminGeneratorBundle\Guesser\ReferencedFieldGuesser')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $guesser->expects($this->any())
+            ->method('guess')
+            ->willReturn($guessedField);
+
+        return $guesser;
     }
 }

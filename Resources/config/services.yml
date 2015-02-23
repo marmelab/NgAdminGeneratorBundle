@@ -4,39 +4,36 @@ services:
         arguments:
             -   # Transformers: be careful, order matters!
                 - @marmelab.ng_admin_generator.transformer.class_name_to_ngadmin_configuration
-#                - @marmelab.ng_admin_generator.transformer.doctrine_to_ngadmin
-                - @marmelab.ng_admin_generator.entity_referenced_field_name_to_meaningful_name
-#                - @marmelab.ng_admin_generator.entity_to_entity_without_excluded_fields
-#                - @marmelab.ng_admin_generator.entity_to_entity_with_date_format
+                - @marmelab.ng_admin_generator.transformer.ngadmin_config_with_relationships
                 - @marmelab.ng_admin_generator.entity_to_entity_with_icon
             - @doctrine.orm.entity_manager
             - @twig
 
+    # Transformers
     marmelab.ng_admin_generator.transformer.class_name_to_ngadmin_configuration:
         class: marmelab\NgAdminGeneratorBundle\Transformer\ClassNameToNgAdminConfigurationTransformer
         public: false
         arguments:
             - @jms_serializer
-            - %ng_admin_generator.best_referenced_field_choices%
+            - @marmelab.nb_admin_generator.guesser.reference_field
 
-    marmelab.ng_admin_generator.transformer.doctrine_to_ngadmin:
-        class: marmelab\NgAdminGeneratorBundle\Transformer\DoctrineToNgAdminTransformer
-        public: false
-
-    marmelab.ng_admin_generator.entity_referenced_field_name_to_meaningful_name:
-        class: marmelab\NgAdminGeneratorBundle\Transformer\EntityReferencedFieldNameToMeaningfulNameTransformer
+    marmelab.ng_admin_generator.transformer.ngadmin_config_with_relationships:
+        class: marmelab\NgAdminGeneratorBundle\Transformer\NgAdminWithRelationshipsTransformer
         public: false
         arguments:
             - @doctrine.orm.entity_manager
-
-    marmelab.ng_admin_generator.entity_to_entity_without_excluded_fields:
-        class: marmelab\NgAdminGeneratorBundle\Transformer\EntityToEntityWithoutExcludedFieldsTransformer
-        public: false
-        arguments:
-            - @jms_serializer
+            - @marmelab.nb_admin_generator.guesser.reference_field
 
     marmelab.ng_admin_generator.entity_to_entity_with_icon:
         class: marmelab\NgAdminGeneratorBundle\Transformer\EntityToEntityWithIconTransformer
         public: false
         arguments:
             - %ng_admin_generator.icons%
+
+    # Guessers
+    marmelab.nb_admin_generator.guesser.reference_field:
+        class: marmelab\NgAdminGeneratorBundle\Guesser\ReferencedFieldGuesser
+        public: false
+        arguments:
+            - @jms_serializer
+            - %ng_admin_generator.best_referenced_field_choices%

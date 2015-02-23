@@ -38,22 +38,8 @@ class ConfigurationGenerator
             $dataWithKeys[$data['name']] = $data;
         }
 
-
         return $this->twig->render('marmelabNgAdminGeneratorBundle:Configuration:config.js.twig', [
             'entities' => $dataWithKeys
         ]);
-    }
-
-    private function getClassesMetadata(array $classNames)
-    {
-        $entities = [];
-        foreach ($classNames as $className) {
-            $classNameParts = explode('\\', $className);
-            $varName = lcfirst(end($classNameParts));
-
-            $entities[$varName] = $this->em->getClassMetadata($className);
-        }
-
-        return $entities;
     }
 }

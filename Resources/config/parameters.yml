@@ -3,4 +3,3 @@ parameters:
       - name
       - title
       - slug
-      - id

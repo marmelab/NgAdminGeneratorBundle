@@ -76,9 +76,6 @@
                         .isDetailLink(false),
                     nga.field('title'),
                     nga.field('body', 'text'),
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
                     nga.field('comments', 'referenced_list')
                         .targetEntity(nga.entity('comment'))
                         .targetReferenceField('post_id')
@@ -87,6 +84,9 @@
                             nga.field('body', 'text'),
 
                     ]),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
                 ]);
 
             post.showView()
@@ -95,9 +95,6 @@
                         .isDetailLink(false),
                     nga.field('title'),
                     nga.field('body', 'text'),
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
                     nga.field('comments', 'referenced_list')
                         .targetEntity(nga.entity('comment'))
                         .targetReferenceField('post_id')
@@ -106,6 +103,9 @@
                             nga.field('body', 'text'),
 
                     ]),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
                 ]);
 
             return post;

@@ -4,16 +4,17 @@ namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
 use Doctrine\Common\Inflector\Inflector;
 use JMS\Serializer\Serializer;
+use marmelab\NgAdminGeneratorBundle\Guesser\ReferencedFieldGuesser;
 
 class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
 {
     private $metadataFactory;
-    private $bestReferencedFieldChoices = [];
+    private $guesser;
 
-    public function __construct(Serializer $serializer, array $bestReferencedFieldChoices = [])
+    public function __construct(Serializer $serializer, ReferencedFieldGuesser $guesser)
     {
         $this->metadataFactory = $serializer->getMetadataFactory();
-        $this->bestReferencedFieldChoices = $bestReferencedFieldChoices;
+        $this->guesser = $guesser;
     }
 
     public function transform($className)
@@ -63,15 +64,21 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
             case 'ArrayCollection':
                 return [
                     'type' => 'referenced_list',
-                    'referencedEntity' => $this->getEntityName($field->type['params'][0]['name']),
-                    'referencedField' => $field->reflection->name.'_id',
+                    'referencedEntity' => [
+                        'class' => $field->type['params'][0]['name'],
+                        'name' => $this->getEntityName($field->type['params'][0]['name'])
+                    ],
+                    'referencedField' => $this->guesser->guess($field->type['params'][0]['name']),
                 ];
 
             case 'Lemon\RestBundle\Serializer\IdCollection':
                 return [
                     'type' => 'reference_many',
-                    'referencedEntity' => $this->getEntityName($field->type['params'][0]['name']),
-                    'referencedField' => $this->getBestReferencedField($field),
+                    'referencedEntity' => [
+                        'class' => $field->type['params'][0]['name'],
+                        'name' => $this->getEntityName($field->type['params'][0]['name'])
+                    ],
+                    'referencedField' => $this->guesser->guess($field->type['params'][0]['name']),
                 ];
 
             case 'DateTime':
@@ -89,23 +96,5 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
         $entityName = end($classParts);
 
         return Inflector::tableize($entityName);
-    }
-
-    private function getBestReferencedField($field)
-    {
-        if (!in_array($field->type['name'], ['ArrayCollection', 'Lemon\RestBundle\Serializer\IdCollection'])) {
-            throw new \DomainException("Can't get a referenced field best match of a non reference field.");
-        }
-
-        $referencedClass = $field->type['params'][0]['name'];
-        $metadata = $this->metadataFactory->getMetadataForClass($referencedClass);
-
-        $fieldNames = array_keys($metadata->propertyMetadata);
-        $bestFields = array_intersect($this->bestReferencedFieldChoices, $fieldNames);
-        if (!count($bestFields)) {
-            return 'id';
-        }
-
-        return current($bestFields);
     }
 }
