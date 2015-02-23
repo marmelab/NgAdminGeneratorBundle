@@ -76,9 +76,6 @@
                         .isDetailLink(false),
                     nga.field('title'),
                     nga.field('body', 'text'),
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
                     nga.field('comments', 'referenced_list')
                         .targetEntity(nga.entity('comment'))
                         .targetReferenceField('post_id')
@@ -87,6 +84,9 @@
                             nga.field('body', 'text'),
 
                     ]),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
                 ]);
 
             post.showView()
@@ -95,9 +95,6 @@
                         .isDetailLink(false),
                     nga.field('title'),
                     nga.field('body', 'text'),
-                    nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
-                        .targetField(nga.field('name')),
                     nga.field('comments', 'referenced_list')
                         .targetEntity(nga.entity('comment'))
                         .targetReferenceField('post_id')
@@ -106,6 +103,9 @@
                             nga.field('body', 'text'),
 
                     ]),
+                    nga.field('tags', 'reference_many')
+                        .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
                 ]);
 
             return post;
@@ -184,18 +184,21 @@
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('name'),
+                    nga.field('created_by'),
                 ]);
 
             tag.listView()
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('name'),
+                    nga.field('created_by'),
                 ])
                 .listActions(['show', 'edit', 'delete']);
 
             tag.creationView()
                 .fields([
                     nga.field('name'),
+                    nga.field('created_by'),
                 ]);
 
             tag.editionView()
@@ -204,6 +207,7 @@
                         .editable(false)
                         .isDetailLink(false),
                     nga.field('name'),
+                    nga.field('created_by'),
                 ]);
 
             tag.showView()
@@ -211,6 +215,7 @@
                     nga.field('id', 'number')
                         .isDetailLink(false),
                     nga.field('name'),
+                    nga.field('created_by'),
                 ]);
 
             return tag;

@@ -34,23 +34,23 @@
         });
     });
 
-    {% for entityName, entity in entities -%}
+    {% for entity in entities -%}
     app.config(function($provide, NgAdminConfigurationProvider) {
-        $provide.factory("{{ entityName|capitalize }}Admin", function() {
+        $provide.factory("{{ entity.name|capitalize }}Admin", function() {
             var nga = NgAdminConfigurationProvider;
-            var {{ entityName }} = nga.entity('{{ entityName }}');
+            var {{ entity.name }} = nga.entity('{{ entity.name }}');
 
-            {{ entityName }}.menuView()
+            {{ entity.name }}.menuView()
                 .icon('<span class="glyphicon glyphicon-{{ entity.icon }}"></span>');
 
-            {{ entityName }}.dashboardView()
+            {{ entity.name }}.dashboardView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "dashboard",
                     "fields": entity.fields[0:3]
                 } only %}
                 ]);
 
-            {{ entityName }}.listView()
+            {{ entity.name }}.listView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "list",
                     "fields": entity.fields
@@ -58,42 +58,42 @@
                 ])
                 .listActions(['show', 'edit', 'delete']);
 
-            {{ entityName }}.creationView()
+            {{ entity.name }}.creationView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "creation",
                     "fields": entity.fields
                 } %}
                 ]);
 
-            {{ entityName }}.editionView()
+            {{ entity.name }}.editionView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "edition",
                     "fields": entity.fields
                 } %}
                 ]);
 
-            {{ entityName }}.showView()
+            {{ entity.name }}.showView()
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "show",
                     "fields": entity.fields
                 } %}
                 ]);
 
-            return {{ entityName }};
+            return {{ entity.name }};
         });
     });
 
     {% endfor -%}
-    app.config(function(NgAdminConfigurationProvider, {% for entityName, metadata in entities -%}
-        {{ entityName|capitalize }}AdminProvider{{ loop.last ? "" : ", " }}
+    app.config(function(NgAdminConfigurationProvider, {% for entity in entities -%}
+        {{ entity.name|capitalize }}AdminProvider{{ loop.last ? "" : ", " }}
     {%- endfor %}) {
         var admin = NgAdminConfigurationProvider
             .application('')
             .baseApiUrl(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/api/')
 
         admin
-        {% for entityName, metadata in entities %}
-    .addEntity({{ entityName|capitalize }}AdminProvider.$get())
+        {% for entity in entities %}
+    .addEntity({{ entity.name|capitalize }}AdminProvider.$get())
         {% endfor %}
 ;
 

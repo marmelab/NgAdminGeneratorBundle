@@ -22,26 +22,24 @@ class ConfigurationGenerator
 
     public function generateConfiguration(array $classNames)
     {
-        $entities = $this->getClassesMetadata($classNames);
+        $transformedData = [];
+
         foreach ($this->transformers as $transformer) {
-            foreach ($entities as &$entity) {
-                $entity = $transformer->transform($entity);
+            $inputData = count($transformedData) ? $transformedData: $classNames;
+
+            $transformedData = [];
+            foreach ($inputData as $input) {
+                $transformedData[] = $transformer->transform($input);
             }
         }
 
-        return $this->twig->render('marmelabNgAdminGeneratorBundle:Configuration:config.js.twig', compact('entities'));
-    }
-
-    private function getClassesMetadata(array $classNames)
-    {
-        $entities = [];
-        foreach ($classNames as $className) {
-            $classNameParts = explode('\\', $className);
-            $varName = lcfirst(end($classNameParts));
-
-            $entities[$varName] = $this->em->getClassMetadata($className);
+        $dataWithKeys = [];
+        foreach ($transformedData as $data) {
+            $dataWithKeys[$data['name']] = $data;
         }
 
-        return $entities;
+        return $this->twig->render('marmelabNgAdminGeneratorBundle:Configuration:config.js.twig', [
+            'entities' => $dataWithKeys
+        ]);
     }
 }

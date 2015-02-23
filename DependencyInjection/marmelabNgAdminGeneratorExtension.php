@@ -24,6 +24,7 @@ class marmelabNgAdminGeneratorExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('icons.yml');
+        $loader->load('parameters.yml');
         $loader->load('services.yml');
     }
 }

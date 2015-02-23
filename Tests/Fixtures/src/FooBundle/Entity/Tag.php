@@ -25,6 +25,11 @@ class Tag
     protected $name;
 
     /**
+     * @ORM\Column(name="createdBy", type="string", length=255, nullable=true)
+     */
+    protected $createdBy;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -54,5 +59,17 @@ class Tag
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
     }
 }

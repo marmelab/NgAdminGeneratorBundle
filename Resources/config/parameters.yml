@@ -1,0 +1,5 @@
+parameters:
+    ng_admin_generator.best_referenced_field_choices:
+      - name
+      - title
+      - slug
