@@ -3,6 +3,8 @@
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
 use JMS\Serializer\Serializer;
+use Metadata\MetadataFactory;
+use Metadata\PropertyMetadata;
 
 class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_TestCase
 {
@@ -10,52 +12,51 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
 
     public function testTransformShouldAddClassFqdnAndEntityName()
     {
-        $serializer = $this->getSerializerMock([[]]);
+        $serializer = $this->getSerializerMock($this->getMetadataFactoryMock());
+        $namingStrategy = $this->getNamingStrategyMock();
         $guesser = $this->getReferencedFieldGuesserMock();
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $guesser);
+
+        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
         $transformedData = $transformer->transform($this->className);
-        $this->assertEquals([
-            'name' => 'post',
-            'class' => 'Acme\FooBundle\Entity\Post',
-            'fields' => [],
-        ], $transformedData);
+        $this->assertEquals('post', $transformedData['name']);
+        $this->assertEquals('Acme\FooBundle\Entity\Post', $transformedData['class']);
     }
 
     public function testShouldTransformIntegerFieldIntoNumber()
     {
-        $serializer = $this->getSerializerMock([[
-            'order' => (object) [
-                'type' => [
-                    'name' => 'integer',
-                ],
+        $serializer = $this->getSerializerMock($this->getMetadataFactoryMock($this->getPropertyMetadataMock([
+            'type' => [
+                'name' => 'integer',
             ],
-        ]]);
+        ])));
+
+        $namingStrategy = $this->getNamingStrategyMock('id');
         $guesser = $this->getReferencedFieldGuesserMock();
 
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $guesser);
+        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
         $transformedData = $transformer->transform($this->className);
         $this->assertEquals([
-            ['name' => 'order', 'type' => 'number'],
+            ['name' => 'id', 'type' => 'number'],
         ], $transformedData['fields']);
     }
 
     /** @dataProvider stringFieldsProvider */
     public function testShouldTransformStringFieldIntoStringOrTextDependingFieldName($fieldName, $expectedType)
     {
-        $serializer = $this->getSerializerMock([[
-            $fieldName => (object) [
-                'type' => [
-                    'name' => 'string',
-                ],
-                'reflection' => (object) [
-                    'name' => $fieldName,
-                ]
+        $serializer = $this->getSerializerMock($this->getMetadataFactoryMock($this->getPropertyMetadataMock([
+            'type' => [
+                'name' => 'string',
             ],
-        ]]);
+            'reflection' => (object) [
+                'name' => $fieldName,
+            ]
+        ])));
+
+        $namingStrategy = $this->getNamingStrategyMock($fieldName);
         $guesser = $this->getReferencedFieldGuesserMock();
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $guesser);
+        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
         $transformedData = $transformer->transform($this->className);
         $this->assertEquals([
@@ -76,28 +77,25 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
 
     public function testShouldTransformArrayCollectionIntoReferencedListFieldWithRelationshipColumn()
     {
-        $serializer = $this->getSerializerMock([
-            $this->className => [
-                'comments' => (object) [
-                    'type' => [
-                        'name' => 'ArrayCollection',
-                        'params' => [
-                            ['name' => 'Acme\FooBundle\Entity\Comment'],
-                        ]
-                    ],
-                    'reflection' => (object) [
-                        'name' => 'post',
-                    ]
-                ],
+        $serializer = $this->getSerializerMock($this->getMetadataFactoryMock($this->getPropertyMetadataMock([
+            'type' => [
+                'name' => 'ArrayCollection',
+                'params' => [
+                    ['name' => 'Acme\FooBundle\Entity\Comment'],
+                ]
             ],
-        ]);
+            'reflection' => (object) [
+                'name' => 'post',
+            ]
+        ])));
+        $namingStrategy = $this->getNamingStrategyMock('comments');
         $guesser = $this->getReferencedFieldGuesserMock('title');
 
-        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $guesser);
+        $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
         $transformedData = $transformer->transform($this->className);
         $this->assertEquals([[
-            'name' => 'comments',
+            'name' => 'comments',   
             'type' => 'referenced_list',
             'referencedEntity' => [
                 'name' => 'comment',
@@ -107,36 +105,66 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
         ]], $transformedData['fields']);
     }
 
-
-    private function getSerializerMock(array $propertyMetadatas)
+    private function getPropertyMetadataMock(array $properties = [])
     {
+        $propertyMetadata = $this->getMockBuilder('JMS\Serializer\Metadata\PropertyMetadata')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        foreach ($properties as $propertyName => $propertyValue) {
+            $propertyMetadata->$propertyName = $propertyValue;
+        }
+
+        return $propertyMetadata;
+    }
+
+    private function getMetadataFactoryMock(PropertyMetadata $propertyMetadata = null)
+    {
+        if (!$propertyMetadata) {
+            $propertyMetadata = $this->getPropertyMetadataMock();
+        }
+
+        $classMetadata = $this->getMockBuilder('Metadata\ClassMetadata')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $classMetadata->propertyMetadata = [$propertyMetadata];
+
         $metadataFactory = $this->getMockBuilder('Metadata\MetadataFactory')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $metadataFactory->expects($this->exactly(count($propertyMetadatas)))
+        $metadataFactory->expects($this->any())
             ->method('getMetadataForClass')
-            ->will($this->returnCallback(function($className) use($propertyMetadatas) {
-                if (count($propertyMetadatas) <= 1) {
-                    return (object) [
-                        'propertyMetadata' => current($propertyMetadatas),
-                    ];
-                }
+            ->willReturn($classMetadata);
 
-                return (object) [
-                    'propertyMetadata' => $propertyMetadatas[$className],
-                ];
-            }));
+        return $metadataFactory;
+    }
 
+    private function getSerializerMock(MetadataFactory $factory)
+    {
         $serializer = $this->getMockBuilder('JMS\Serializer\Serializer')
             ->disableOriginalConstructor()
             ->getMock();
 
         $serializer->expects($this->once())
             ->method('getMetadataFactory')
-            ->willReturn($metadataFactory);
+            ->willReturn($factory);
 
         return $serializer;
+    }
+
+    private function getNamingStrategyMock($expectedName = null)
+    {
+        $strategy = $this->getMockBuilder('JMS\Serializer\Naming\PropertyNamingStrategyInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $strategy->expects($this->any())
+            ->method('translateName')
+            ->willReturn($expectedName);
+
+        return $strategy;
     }
 
     private function getReferencedFieldGuesserMock($guessedField = null)

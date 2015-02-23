@@ -3,17 +3,22 @@
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
 use Doctrine\Common\Inflector\Inflector;
+use JMS\Serializer\Metadata\PropertyMetadata;
+use JMS\Serializer\Naming\PropertyNamingStrategyInterface;
 use JMS\Serializer\Serializer;
 use marmelab\NgAdminGeneratorBundle\Guesser\ReferencedFieldGuesser;
+use Metadata\ClassMetadata;
 
 class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
 {
     private $metadataFactory;
+    private $namingStrategy;
     private $guesser;
 
-    public function __construct(Serializer $serializer, ReferencedFieldGuesser $guesser)
+    public function __construct(Serializer $serializer, PropertyNamingStrategyInterface $namingStrategy, ReferencedFieldGuesser $guesser)
     {
         $this->metadataFactory = $serializer->getMetadataFactory();
+        $this->namingStrategy = $namingStrategy;
         $this->guesser = $guesser;
     }
 
@@ -27,8 +32,8 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
             'fields' => [],
         ];
 
-        foreach ($metadata->propertyMetadata as $fieldName => $jmsField) {
-            $field = ['name' => $fieldName];
+        foreach ($metadata->propertyMetadata as $jmsField) {
+            $field = ['name' => $this->namingStrategy->translateName($jmsField)];
             $field = array_merge($field, $this->getExtraDataBasedOnType($jmsField));
 
             $entity['fields'][] = $field;
@@ -42,7 +47,7 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
         throw new \DomainException("You shouldn't need to turn a ng-admin collection into JMS metadata.");
     }
 
-    private function getExtraDataBasedOnType($field)
+    private function getExtraDataBasedOnType(PropertyMetadata $field)
     {
         $type = $field->type['name'];
 
