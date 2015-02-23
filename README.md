@@ -46,9 +46,10 @@ Note that thanks to Symfony2 Console component, you can truncate parts of the co
 
 ## Configuration sample
 
-Here is a sample of auto-generated configuration, based on [stanlemon/rest-demo-app] demo application. This application
-set up same domain as the official [ng-admin demonstration](#). Generator simply uses [entities mapping]
-(https://github.com/stanlemon/rest-demo-app/tree/master/src/Lemon/RestDemoBundle/Entity) to better know which field to use.
+Here is a sample of auto-generated configuration, based on [stanlemon/rest-demo-app](https://github.com/stanlemon/rest-demo-app)
+demo application. This application sets up same domain as the official [ng-admin demonstration](#). Generator simply uses
+[entities mapping](https://github.com/stanlemon/rest-demo-app/tree/master/src/Lemon/RestDemoBundle/Entity) to better know
+which field to use.
 
 Comments are addition for this README, and won't be added automatically:
 
