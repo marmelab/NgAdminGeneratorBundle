@@ -16,6 +16,7 @@ parameters:
             - member
             - user
             - account
+            - player
         film:
             - movie
             - film
