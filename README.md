@@ -227,7 +227,7 @@ protected $address_id;
 private $address;
 ```
 
-This issue would be solved in the next weeks using [Restangular entity transformers]
+This issue should be solved in the next weeks using [Restangular entity transformers]
 (https://github.com/marmelab/ng-admin/blob/master/doc/API-mapping.md#entry-format) in order to match automatically the
 id field of given object.
 
