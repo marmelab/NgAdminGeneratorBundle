@@ -180,6 +180,62 @@ app.config(function(NgAdminConfigurationProvider, PostAdminProvider, CommentAdmi
 });
 ```
 
+## Known (current) limitations
+
+This is an early release of our bundle. There are currently some known limitations, especially regarding relationships.
+
+### One-to-many relationships
+
+Your API should return only the id of referenced entity, not an object. For instance, an API like the following would
+produce an error:
+
+``` json
+{
+    "first_name": "John",
+    "last_name": "Doe",
+    "address": {
+        "id": 1,
+        "address": "88 Colin P Kelly Jr Street",
+        "city": "San Francisco"
+    }
+}
+```
+
+You should instead return only an `address_id` field:
+
+``` json
+{
+    "first_name": "John",
+    "last_name": "Doe",
+    "address_id": 1
+}
+```
+
+This is easily done using the following `Serializer` annotations:
+
+``` php
+/**
+ * @ORM\Column(name="address_id", type="integer", nullable=false)
+ */
+protected $address_id;
+
+/**
+ * @ORM\ManyToOne(targetEntity="Acme\FooBundle\Entity\Address")
+ * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
+ * @Serializer\Exclude()
+ **/
+private $address;
+```
+
+This issue should be solved in the next weeks using [Restangular entity transformers]
+(https://github.com/marmelab/ng-admin/blob/master/doc/API-mapping.md#entry-format) in order to match automatically the
+id field of given object.
+
+### Many-to-many relationships
+
+Many-to-many support is currently not well supported. We are prioritizing our efforts to make it fully functional out
+of the box.
+
 ## Contributing
 
 Your feedback about the usage of this bundle is valuable: don't hesitate to [open GitHub Issues](https://github.com/marmelab/ng-admin/issues)
