@@ -9,7 +9,7 @@ Then, you will love NgAdminGeneratorBundle, the Symfony2 bundle that  bootstraps
 
 Using this bundle in your own project is pretty straightforward, thanks to composer:
 
-`composer require marmelab/NgAdminGeneratorBundle`
+`composer require marmelab/ng-admin-generator-bundle`
 
 Then, register it to your `AppKernel.php` file. The NgAdminGeneratorBundle should only be used in development:
 
