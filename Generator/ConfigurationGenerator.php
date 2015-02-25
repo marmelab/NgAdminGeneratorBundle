@@ -20,7 +20,7 @@ class ConfigurationGenerator
         $this->twig = $twig;
     }
 
-    public function generateConfiguration($objectDefinitions)
+    public function generateConfiguration(array $objectDefinitions)
     {
         $transformedData = [];
 
