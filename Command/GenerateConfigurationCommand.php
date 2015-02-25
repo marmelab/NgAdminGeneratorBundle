@@ -21,6 +21,6 @@ class GenerateConfigurationCommand extends ContainerAwareCommand
         $restRegistry = $container->get('lemon_rest.object_registry');
         $configurationGenerator = $container->get('marmelab.ng_admin_generator.configuration_generator');
 
-        $output->writeln($configurationGenerator->generateConfiguration($restRegistry->getClasses()));
+        $output->writeln($configurationGenerator->generateConfiguration($restRegistry->all()));
     }
 }

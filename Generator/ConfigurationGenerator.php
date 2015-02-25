@@ -20,12 +20,12 @@ class ConfigurationGenerator
         $this->twig = $twig;
     }
 
-    public function generateConfiguration(array $classNames)
+    public function generateConfiguration($objectDefinitions)
     {
         $transformedData = [];
 
         foreach ($this->transformers as $transformer) {
-            $inputData = count($transformedData) ? $transformedData: $classNames;
+            $inputData = count($transformedData) ? $transformedData: $objectDefinitions;
 
             $transformedData = [];
             foreach ($inputData as $input) {

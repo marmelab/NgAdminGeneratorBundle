@@ -8,6 +8,7 @@ use JMS\Serializer\Naming\PropertyNamingStrategyInterface;
 use JMS\Serializer\Serializer;
 use marmelab\NgAdminGeneratorBundle\Guesser\ReferencedFieldGuesser;
 use Metadata\ClassMetadata;
+use Lemon\RestBundle\Object\Definition;
 
 class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
 {
@@ -22,13 +23,13 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
         $this->guesser = $guesser;
     }
 
-    public function transform($className)
+    public function transform($objectDefinition)
     {
-        $metadata = $this->metadataFactory->getMetadataForClass($className);
+        $metadata = $this->metadataFactory->getMetadataForClass($objectDefinition->getClass());
 
         $entity = [
-            'class' => $className,
-            'name' => $this->getEntityName($className),
+            'class' => $objectDefinition->getClass(),
+            'name' => $objectDefinition->getName(),
             'fields' => [],
         ];
 
@@ -100,6 +101,6 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
         $classParts = explode('\\', $className);
         $entityName = end($classParts);
 
-        return Inflector::tableize($entityName);
+        return Inflector::pluralize(lcfirst($entityName));
     }
 }
