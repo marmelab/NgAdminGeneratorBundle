@@ -44,6 +44,8 @@
                 .icon('<span class="glyphicon glyphicon-{{ entity.icon }}"></span>');
 
             {{ entity.name }}.dashboardView()
+                .title('Recent {{ entity.name }}')
+                .limit(5)
                 .fields([{% include "marmelabNgAdminGeneratorBundle:Configuration:fields.js.twig" with {
                     "view": "dashboard",
                     "fields": entity.fields[0:3]
