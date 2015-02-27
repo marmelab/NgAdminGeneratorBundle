@@ -59,6 +59,9 @@
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
                         .targetField(nga.field('name')),
+                    nga.field('category', 'reference')
+                        .targetEntity(nga.entity('category')
+                        .targetField(nga.field('name')),
                 ])
                 .listActions(['show', 'edit', 'delete']);
 
@@ -68,6 +71,9 @@
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
+                    nga.field('category', 'reference')
+                        .targetEntity(nga.entity('category')
                         .targetField(nga.field('name')),
                 ]);
 
@@ -89,6 +95,9 @@
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
                         .targetField(nga.field('name')),
+                    nga.field('category', 'reference')
+                        .targetEntity(nga.entity('category')
+                        .targetField(nga.field('name')),
                 ]);
 
             post.showView()
@@ -107,6 +116,9 @@
                     ]),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tag'))
+                        .targetField(nga.field('name')),
+                    nga.field('category', 'reference')
+                        .targetEntity(nga.entity('category')
                         .targetField(nga.field('name')),
                 ]);
 

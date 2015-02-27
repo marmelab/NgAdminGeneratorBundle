@@ -54,6 +54,12 @@ class Post
      **/
     protected $tags;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="FooBundle\Entity\Category", inversedBy="categories")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    protected $category;
+
     public function __construct()
     {
         $this->tags = new ArrayCollection();
