@@ -42,7 +42,7 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
 
         $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
-        $transformedData = $transformer->transform($this->className);
+        $transformedData = $transformer->transform($this->objectDefinition);
         $this->assertEquals([
             ['name' => 'id', 'type' => 'number'],
         ], $transformedData['fields']);
@@ -64,7 +64,7 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
         $guesser = $this->getReferencedFieldGuesserMock();
         $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
-        $transformedData = $transformer->transform($this->className);
+        $transformedData = $transformer->transform($this->objectDefinition);
         $this->assertEquals([
             ['name' => $fieldName, 'type' => $expectedType],
         ], $transformedData['fields']);
@@ -99,12 +99,12 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
 
         $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
-        $transformedData = $transformer->transform($this->className);
+        $transformedData = $transformer->transform($this->objectDefinition);
         $this->assertEquals([[
             'name' => 'comments',   
             'type' => 'referenced_list',
             'referencedEntity' => [
-                'name' => 'comment',
+                'name' => 'comments',
                 'class' => 'Acme\FooBundle\Entity\Comment',
             ],
             'referencedField' => 'title',
