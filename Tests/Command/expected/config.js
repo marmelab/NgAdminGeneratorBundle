@@ -37,7 +37,7 @@
     app.config(function($provide, NgAdminConfigurationProvider) {
         $provide.factory("PostAdmin", function() {
             var nga = NgAdminConfigurationProvider;
-            var post = nga.entity('post');
+            var post = nga.entity('posts');
 
             post.menuView()
                 .icon('<span class="glyphicon glyphicon-pencil"></span>');
@@ -55,7 +55,7 @@
                     nga.field('title'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
+                        .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
                 ])
                 .listActions(['show', 'edit', 'delete']);
@@ -65,7 +65,7 @@
                     nga.field('title'),
                     nga.field('body', 'text'),
                     nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
+                        .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
                 ]);
 
@@ -85,7 +85,7 @@
 
                     ]),
                     nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
+                        .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
                 ]);
 
@@ -104,7 +104,7 @@
 
                     ]),
                     nga.field('tags', 'reference_many')
-                        .targetEntity(nga.entity('tag'))
+                        .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
                 ]);
 
@@ -125,7 +125,7 @@
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
                     nga.field('post_id', 'reference')
-                        .targetEntity(nga.entity('post'))
+                        .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ]);
 
@@ -134,7 +134,7 @@
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
                     nga.field('post_id', 'reference')
-                        .targetEntity(nga.entity('post'))
+                        .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ])
                 .listActions(['show', 'edit', 'delete']);
@@ -143,7 +143,7 @@
                 .fields([
                     nga.field('body', 'text'),
                     nga.field('post_id', 'reference')
-                        .targetEntity(nga.entity('post'))
+                        .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ]);
 
@@ -154,7 +154,7 @@
                         .isDetailLink(false),
                     nga.field('body', 'text'),
                     nga.field('post_id', 'reference')
-                        .targetEntity(nga.entity('post'))
+                        .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ]);
 
@@ -164,7 +164,7 @@
                         .isDetailLink(false),
                     nga.field('body', 'text'),
                     nga.field('post_id', 'reference')
-                        .targetEntity(nga.entity('post'))
+                        .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ]);
 
@@ -175,7 +175,7 @@
     app.config(function($provide, NgAdminConfigurationProvider) {
         $provide.factory("TagAdmin", function() {
             var nga = NgAdminConfigurationProvider;
-            var tag = nga.entity('tag');
+            var tag = nga.entity('tags');
 
             tag.menuView()
                 .icon('<span class="glyphicon glyphicon-tags"></span>');

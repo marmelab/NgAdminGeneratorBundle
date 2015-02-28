@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d5107b0ef44787cea9c38442f0c9e6c6",
+    "hash": "f9500101feb64f8685fb32913286aa42",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1206,16 +1206,16 @@
         },
         {
             "name": "stanlemon/rest-bundle",
-            "version": "0.6.1",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stanlemon/rest-bundle.git",
-                "reference": "f002474faed4b9970ea95a0927a9018aa30b3666"
+                "reference": "6beb48ca82b6d3c18180be391d41ce12eeae64ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stanlemon/rest-bundle/zipball/f002474faed4b9970ea95a0927a9018aa30b3666",
-                "reference": "f002474faed4b9970ea95a0927a9018aa30b3666",
+                "url": "https://api.github.com/repos/stanlemon/rest-bundle/zipball/6beb48ca82b6d3c18180be391d41ce12eeae64ad",
+                "reference": "6beb48ca82b6d3c18180be391d41ce12eeae64ad",
                 "shasum": ""
             },
             "require": {
@@ -1254,7 +1254,7 @@
                 }
             ],
             "description": "Create REST endpoints for Doctrine entities",
-            "time": "2014-12-11 03:23:14"
+            "time": "2015-02-28 16:32:30"
         },
         {
             "name": "symfony/browser-kit",
@@ -2916,7 +2916,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "stanlemon/rest-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

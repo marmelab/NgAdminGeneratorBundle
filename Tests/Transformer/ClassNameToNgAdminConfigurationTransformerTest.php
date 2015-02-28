@@ -5,10 +5,16 @@ namespace marmelab\NgAdminGeneratorBundle\Transformer;
 use JMS\Serializer\Serializer;
 use Metadata\MetadataFactory;
 use Metadata\PropertyMetadata;
+use Lemon\RestBundle\Object\Definition;
 
 class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_TestCase
 {
-    private $className = 'Acme\FooBundle\Entity\Post';
+    private $objectDefinition;
+    
+    public function setUp()
+    {
+        $this->objectDefinition = new Definition('post', 'Acme\FooBundle\Entity\Post');
+    }
 
     public function testTransformShouldAddClassFqdnAndEntityName()
     {
@@ -17,8 +23,8 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
         $guesser = $this->getReferencedFieldGuesserMock();
 
         $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
+        $transformedData = $transformer->transform($this->objectDefinition);
 
-        $transformedData = $transformer->transform($this->className);
         $this->assertEquals('post', $transformedData['name']);
         $this->assertEquals('Acme\FooBundle\Entity\Post', $transformedData['class']);
     }
