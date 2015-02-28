@@ -21,7 +21,7 @@
     "symfony/twig-bundle": "2.*",
     "symfony/finder": "2.*",
     "symfony/yaml": "2.*",
-    "stanlemon/rest-bundle": "dev-develop@dev"
+    "stanlemon/rest-bundle": "0.7.*"
   },
   "autoload": {
     "psr-4": { "marmelab\\NgAdminGeneratorBundle\\": "" }
