@@ -8,8 +8,8 @@
         RestangularProvider.addFullRequestInterceptor(function(element, operation, what, url, headers, params) {
             if (operation == "getList") {
                 // custom pagination params
-                params._start = (params._page - 1) * params._perPage;
-                params._end = params._page * params._perPage;
+                params._offset = (params._page - 1) * params._perPage;
+                params._limit = params._perPage;
                 delete params._page;
                 delete params._perPage;
 
@@ -43,6 +43,8 @@
                 .icon('<span class="glyphicon glyphicon-pencil"></span>');
 
             post.dashboardView()
+                .title('Recent post')
+                .limit(5)
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('title'),
@@ -121,6 +123,8 @@
                 .icon('<span class="glyphicon glyphicon-comment"></span>');
 
             comment.dashboardView()
+                .title('Recent comment')
+                .limit(5)
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
@@ -181,6 +185,8 @@
                 .icon('<span class="glyphicon glyphicon-tags"></span>');
 
             tag.dashboardView()
+                .title('Recent tag')
+                .limit(5)
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('name'),
