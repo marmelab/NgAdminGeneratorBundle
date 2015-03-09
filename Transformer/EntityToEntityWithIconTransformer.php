@@ -3,6 +3,7 @@
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Inflector\Inflector;
 
 class EntityToEntityWithIconTransformer implements TransformerInterface
 {
@@ -17,7 +18,9 @@ class EntityToEntityWithIconTransformer implements TransformerInterface
 
     public function transform($entity)
     {
-        $entity['icon'] = $this->getIcon($entity['name']);
+        $entity['icon'] = $this->getIcon(
+            Inflector::singularize($entity['name'])
+        );
 
         return $entity;
     }

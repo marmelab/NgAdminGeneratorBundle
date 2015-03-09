@@ -3,6 +3,7 @@
 namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Inflector\Inflector;
 use marmelab\NgAdminGeneratorBundle\Guesser\ReferencedFieldGuesser;
 
 class NgAdminWithRelationshipsTransformer implements TransformerInterface
@@ -92,7 +93,7 @@ class NgAdminWithRelationshipsTransformer implements TransformerInterface
                 'name' => $field['name'],
                 'type' => 'reference',
                 'referencedEntity' => [
-                    'name' => $matchingAssociation['fieldName'],
+                    'name' => Inflector::pluralize($matchingAssociation['fieldName']),
                     'class' => $matchingAssociation['targetEntity'],
                 ],
                 'referencedField' => $this->referencedFieldGuesser->guess($matchingAssociation['targetEntity']),

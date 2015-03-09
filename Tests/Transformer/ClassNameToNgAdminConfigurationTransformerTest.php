@@ -5,10 +5,16 @@ namespace marmelab\NgAdminGeneratorBundle\Transformer;
 use JMS\Serializer\Serializer;
 use Metadata\MetadataFactory;
 use Metadata\PropertyMetadata;
+use Lemon\RestBundle\Object\Definition;
 
 class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_TestCase
 {
-    private $className = 'Acme\FooBundle\Entity\Post';
+    private $objectDefinition;
+    
+    public function setUp()
+    {
+        $this->objectDefinition = new Definition('post', 'Acme\FooBundle\Entity\Post');
+    }
 
     public function testTransformShouldAddClassFqdnAndEntityName()
     {
@@ -17,8 +23,8 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
         $guesser = $this->getReferencedFieldGuesserMock();
 
         $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
+        $transformedData = $transformer->transform($this->objectDefinition);
 
-        $transformedData = $transformer->transform($this->className);
         $this->assertEquals('post', $transformedData['name']);
         $this->assertEquals('Acme\FooBundle\Entity\Post', $transformedData['class']);
     }
@@ -36,7 +42,7 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
 
         $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
-        $transformedData = $transformer->transform($this->className);
+        $transformedData = $transformer->transform($this->objectDefinition);
         $this->assertEquals([
             ['name' => 'id', 'type' => 'number'],
         ], $transformedData['fields']);
@@ -58,7 +64,7 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
         $guesser = $this->getReferencedFieldGuesserMock();
         $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
-        $transformedData = $transformer->transform($this->className);
+        $transformedData = $transformer->transform($this->objectDefinition);
         $this->assertEquals([
             ['name' => $fieldName, 'type' => $expectedType],
         ], $transformedData['fields']);
@@ -93,12 +99,12 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
 
         $transformer = new ClassNameToNgAdminConfigurationTransformer($serializer, $namingStrategy, $guesser);
 
-        $transformedData = $transformer->transform($this->className);
+        $transformedData = $transformer->transform($this->objectDefinition);
         $this->assertEquals([[
             'name' => 'comments',   
             'type' => 'referenced_list',
             'referencedEntity' => [
-                'name' => 'comment',
+                'name' => 'comments',
                 'class' => 'Acme\FooBundle\Entity\Comment',
             ],
             'referencedField' => 'title',
