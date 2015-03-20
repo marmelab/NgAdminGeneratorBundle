@@ -1,0 +1,26 @@
+FooBundle\Entity\Comment:
+    type: entity
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        body:
+            type: text
+        created_at:
+            type: date
+            nullable: false
+        post_id:
+            type: integer
+            nullable: false
+
+    manyToOne:
+        post:
+            targetEntity: FooBundle\Entity\Post
+            inversedBy: comments
+            joinColumn:
+                post_id:
+                    referencedColumnName: id
