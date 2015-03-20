@@ -22,8 +22,11 @@ class ReferencedFieldGuesser
 
         $fieldNames = array_keys($metadata->propertyMetadata);
         $bestFields = array_intersect($this->bestReferencedFieldChoices, $fieldNames);
+
+        // if we can't guess any field, return the first one (the id generally)
         if (!count($bestFields)) {
-            return null;
+            $property = reset($metadata->propertyMetadata);
+            return $property->name;
         }
 
         return current($bestFields);
