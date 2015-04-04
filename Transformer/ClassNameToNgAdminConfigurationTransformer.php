@@ -6,21 +6,16 @@ use Doctrine\Common\Inflector\Inflector;
 use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Naming\PropertyNamingStrategyInterface;
 use JMS\Serializer\Serializer;
-use marmelab\NgAdminGeneratorBundle\Guesser\ReferencedFieldGuesser;
-use Metadata\ClassMetadata;
-use Lemon\RestBundle\Object\Definition;
 
 class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
 {
     private $metadataFactory;
     private $namingStrategy;
-    private $guesser;
 
-    public function __construct(Serializer $serializer, PropertyNamingStrategyInterface $namingStrategy, ReferencedFieldGuesser $guesser)
+    public function __construct(Serializer $serializer, PropertyNamingStrategyInterface $namingStrategy)
     {
         $this->metadataFactory = $serializer->getMetadataFactory();
         $this->namingStrategy = $namingStrategy;
-        $this->guesser = $guesser;
     }
 
     public function transform($objectDefinition)
@@ -74,7 +69,6 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
                         'class' => $field->type['params'][0]['name'],
                         'name' => $this->getEntityName($field->type['params'][0]['name'])
                     ],
-                    'referencedField' => $this->guesser->guess($field->type['params'][0]['name']),
                 ];
 
             case 'Lemon\RestBundle\Serializer\IdCollection':
@@ -84,7 +78,6 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
                         'class' => $field->type['params'][0]['name'],
                         'name' => $this->getEntityName($field->type['params'][0]['name'])
                     ],
-                    'referencedField' => $this->guesser->guess($field->type['params'][0]['name']),
                 ];
 
             case 'DateTime':

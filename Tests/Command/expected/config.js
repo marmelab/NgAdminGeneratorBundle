@@ -128,7 +128,7 @@
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
-                    nga.field('post_id', 'reference')
+                    nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ]);
@@ -137,7 +137,7 @@
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('body', 'text'),
-                    nga.field('post_id', 'reference')
+                    nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ])
@@ -146,7 +146,7 @@
             comments.creationView()
                 .fields([
                     nga.field('body', 'text'),
-                    nga.field('post_id', 'reference')
+                    nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ]);
@@ -157,7 +157,7 @@
                         .editable(false)
                         .isDetailLink(false),
                     nga.field('body', 'text'),
-                    nga.field('post_id', 'reference')
+                    nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ]);
@@ -167,7 +167,7 @@
                     nga.field('id', 'number')
                         .isDetailLink(false),
                     nga.field('body', 'text'),
-                    nga.field('post_id', 'reference')
+                    nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
                 ]);

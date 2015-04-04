@@ -20,59 +20,6 @@ class NgAdminWithRelationshipsTransformer implements TransformerInterface
 
     public function transform($configuration)
     {
-        $transformedConfiguration = $this->addForeignKeyFieldToReferencedFields($configuration);
-        $transformedConfiguration = $this->transformReferenceRelationships($transformedConfiguration);
-
-        return $transformedConfiguration;
-    }
-
-    public function reverseTransform($configWithRelationships)
-    {
-        throw new \DomainException("You shouldn't have to remove relationships from a ng-admin configuration.");
-    }
-
-    private function addForeignKeyFieldToReferencedFields($configuration)
-    {
-        $referenceFields = array_filter($configuration['fields'], function($field) {
-            return in_array($field['type'], ['referenced_list', 'reference_many']);
-        });
-
-        if (!count($referenceFields)) {
-            return $configuration;
-        }
-
-        $transformedConfiguration = $configuration;
-        foreach ($referenceFields as $index => $referenceField) {
-            // if referenced field already found with JMS serializer, just skip it.
-            if ($referenceField['referencedField']) {
-                continue;
-            }
-
-            if ($referenceField['type'] === 'referenced_list') {
-                $targetEntity = $configuration['class'];
-                $sourceEntity = $referenceField['referencedEntity']['class'];
-            }
-
-            $referenceMetadata = $this->metadataFactory->getMetadataFor($referenceField['referencedEntity']['class']);
-            foreach ($referenceMetadata->associationMappings as $mapping) {
-                if ($mapping['sourceEntity'] !== $sourceEntity && $mapping['targetEntity'] !== $targetEntity) {
-                    continue;
-                }
-
-                if ($referenceField['type'] === 'referenced_list') {
-                    $transformedConfiguration['fields'][$index]['referencedField'] = $mapping['targetToSourceKeyColumns']['id'];
-                }
-            }
-        }
-
-        return $transformedConfiguration;
-    }
-
-    /**
-     * Turns foreign key columns into Reference field instead of simple "number" one.
-     */
-    private function transformReferenceRelationships($configuration)
-    {
         $associationMappings = $this->metadataFactory->getMetadataFor($configuration['class'])->getAssociationMappings();
         if (!count($associationMappings)) {
             return $configuration;
@@ -119,6 +66,11 @@ class NgAdminWithRelationshipsTransformer implements TransformerInterface
         return $transformedConfiguration;
     }
 
+    public function reverseTransform($configWithRelationships)
+    {
+        throw new \DomainException("You shouldn't have to remove relationships from a ng-admin configuration.");
+    }
+
     private function getFieldIndex(array $fields, $fieldName)
     {
         foreach($fields as $index => $field) {
@@ -150,7 +102,7 @@ class NgAdminWithRelationshipsTransformer implements TransformerInterface
                 'name' => Inflector::pluralize($associationMapping['fieldName']),
                 'class' => $associationMapping['targetEntity']
             ],
-            'referencedField' => $this->referencedFieldGuesser->guess($associationMapping['targetEntity'])
+            'referencedField' => $this->referencedFieldGuesser->guessTargetReferenceField($associationMapping['sourceEntity'])
         ];
     }
 

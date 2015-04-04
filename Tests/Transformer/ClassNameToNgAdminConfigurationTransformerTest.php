@@ -106,8 +106,7 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
             'referencedEntity' => [
                 'name' => 'comments',
                 'class' => 'Acme\FooBundle\Entity\Comment',
-            ],
-            'referencedField' => 'title',
+            ]
         ]], $transformedData['fields']);
     }
 

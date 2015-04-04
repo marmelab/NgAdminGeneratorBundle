@@ -16,7 +16,6 @@ services:
         arguments:
             - @jms_serializer
             - @jms_serializer.naming_strategy
-            - @marmelab.nb_admin_generator.guesser.reference_field
 
     marmelab.ng_admin_generator.transformer.ngadmin_config_with_relationships:
         class: marmelab\NgAdminGeneratorBundle\Transformer\NgAdminWithRelationshipsTransformer
