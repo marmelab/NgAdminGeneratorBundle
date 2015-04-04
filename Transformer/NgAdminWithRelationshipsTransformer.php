@@ -20,12 +20,14 @@ class NgAdminWithRelationshipsTransformer implements TransformerInterface
 
     public function transform($configuration)
     {
+        $transformedConfiguration = $configuration;
+
         $associationMappings = $this->metadataFactory->getMetadataFor($configuration['class'])->getAssociationMappings();
+        $transformedConfiguration['has_relationships'] = (bool) count($associationMappings);
         if (!count($associationMappings)) {
-            return $configuration;
+            return $transformedConfiguration;
         }
 
-        $transformedConfiguration = $configuration;
         foreach ($associationMappings as $fieldName => $associationMapping) {
             // Try to find field to modify
             $fieldIndex = $this->getFieldIndex($configuration['fields'], $fieldName);

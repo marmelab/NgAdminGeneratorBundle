@@ -34,10 +34,20 @@
         });
     });
 
-    app.config(function($provide, NgAdminConfigurationProvider) {
+    app.config(function($provide, NgAdminConfigurationProvider, RestangularProvider) {
         $provide.factory("PostsAdmin", function() {
             var nga = NgAdminConfigurationProvider;
             var posts = nga.entity('posts');
+
+            RestangularProvider.addElementTransformer('posts', function(element) {
+                if (element.tags) {
+                    element.tags = element.tags.map(function(item) {
+                        return item.id;
+                    });
+                }
+
+                return element;
+            });
 
             posts.menuView()
                 .icon('<span class="glyphicon glyphicon-pencil"></span>');
@@ -114,10 +124,18 @@
         });
     });
 
-    app.config(function($provide, NgAdminConfigurationProvider) {
+    app.config(function($provide, NgAdminConfigurationProvider, RestangularProvider) {
         $provide.factory("CommentsAdmin", function() {
             var nga = NgAdminConfigurationProvider;
             var comments = nga.entity('comments');
+
+            RestangularProvider.addElementTransformer('comments', function(element) {
+                if (element.post) {
+                    element.post = element.post.id;
+                }
+
+                return element;
+            });
 
             comments.menuView()
                 .icon('<span class="glyphicon glyphicon-comment"></span>');
