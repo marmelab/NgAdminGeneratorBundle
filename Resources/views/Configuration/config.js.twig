@@ -35,10 +35,16 @@
     });
 
     {% for entity in entities -%}
-    app.config(function($provide, NgAdminConfigurationProvider) {
+    app.config(function($provide, NgAdminConfigurationProvider{{ entity.has_relationships ? ", RestangularProvider" : "" }}) {
         $provide.factory("{{ entity.name|capitalize }}Admin", function() {
             var nga = NgAdminConfigurationProvider;
             var {{ entity.name }} = nga.entity('{{ entity.name }}');
+{% if entity.has_relationships %}
+
+            {% include "marmelabNgAdminGeneratorBundle:Configuration:element_transformer.js.twig" with {
+                    "entity": entity
+                } only %}
+{% endif %}
 
             {{ entity.name }}.menuView()
                 .icon('<span class="glyphicon glyphicon-{{ entity.icon }}"></span>');

@@ -1,0 +1,18 @@
+RestangularProvider.addElementTransformer('{{ entity.name }}', function(element) {
+                {% for field in entity.fields %}
+                {%- if field.type == 'reference' %}
+if (element.{{ field.name }}) {
+                    element.{{ field.name }} = element.{{ field.name }}.id;
+                }
+
+                {% elseif field.type == 'reference_many' %}
+if (element.{{ field.name }}) {
+                    element.{{ field.name }} = element.{{ field.name }}.map(function(item) {
+                        return item.id;
+                    });
+                }
+
+                {% endif -%}
+            {% endfor %}
+return element;
+            });
