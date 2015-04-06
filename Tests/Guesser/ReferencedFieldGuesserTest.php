@@ -15,13 +15,30 @@ class ReferencedFieldGuesserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('name', $guesser->guess('Acme\FooBundle\Entity\Post'));
     }
 
-    public function testGuessingBestReferencedFieldShouldReturnNullIfNoFieldFound()
+    public function testGuessingBestReferencedFieldShouldReturnFirstFieldIfNoFieldFound()
     {
         $bestChoices = ['title', 'slug'];
         $serializer = $this->getSerializerMock(['id', 'name', 'created_at']);
         $guesser = new ReferencedFieldGuesser($serializer, $bestChoices);
 
-        $this->assertEquals(null, $guesser->guess('Acme\FooBundle\Entity\Post'));
+        $this->assertEquals('id', $guesser->guess('Acme\FooBundle\Entity\Post'));
+    }
+
+    /** @dataProvider guessTargetReferenceFieldProvider */
+    public function testGuessTargetReferenceField($className, $expectedFieldName)
+    {
+        $guesser = new ReferencedFieldGuesser($this->getSerializerMock([], 0), []);
+        $targetReferenceField = $guesser->guessTargetReferenceField($className);
+        $this->assertEquals($expectedFieldName, $targetReferenceField);
+    }
+
+    public function guessTargetReferenceFieldProvider()
+    {
+        return [
+            [null, null],
+            ['', null],
+            ['FooBundle\Entity\Post', 'post_id'],
+        ];
     }
 
     private function getSerializerMock(array $fieldNames, $metadataForClassExpectedCalls = 1)

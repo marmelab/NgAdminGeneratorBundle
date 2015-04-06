@@ -22,10 +22,21 @@ class ReferencedFieldGuesser
 
         $fieldNames = array_keys($metadata->propertyMetadata);
         $bestFields = array_intersect($this->bestReferencedFieldChoices, $fieldNames);
+
+        // if we can't guess any field, return the first one (the id generally)
         if (!count($bestFields)) {
-            return null;
+            return $fieldNames[0];
         }
 
         return current($bestFields);
+    }
+
+    public function guessTargetReferenceField($referencedClass)
+    {
+        // @TODO: find a more reliable way to get relationship column name
+        $className = explode('\\', $referencedClass);
+        $className = end($className);
+
+        return $className ? strtolower($className).'_id' : null;
     }
 }

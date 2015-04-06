@@ -4,6 +4,7 @@ namespace marmelab\NgAdminGeneratorBundle\Transformer;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Inflector\Inflector;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use marmelab\NgAdminGeneratorBundle\Guesser\ReferencedFieldGuesser;
 
 class NgAdminWithRelationshipsTransformer implements TransformerInterface
@@ -19,8 +20,48 @@ class NgAdminWithRelationshipsTransformer implements TransformerInterface
 
     public function transform($configuration)
     {
-        $transformedConfiguration = $this->addForeignKeyFieldToReferencedFields($configuration);
-        $transformedConfiguration = $this->transformReferenceRelationships($transformedConfiguration);
+        $associationMappings = $this->metadataFactory->getMetadataFor($configuration['class'])->getAssociationMappings();
+        if (!count($associationMappings)) {
+            return $configuration;
+        }
+
+        $transformedConfiguration = $configuration;
+        foreach ($associationMappings as $fieldName => $associationMapping) {
+            // Try to find field to modify
+            $fieldIndex = $this->getFieldIndex($configuration['fields'], $fieldName);
+            if (!$fieldIndex) {
+                // if not found, try with referenced column
+                $fieldName = $associationMapping['joinColumns'][0]['name'];
+                $fieldIndex = $this->getFieldIndex($configuration['fields'], $fieldName);
+                if (!$fieldIndex) {
+                    continue;
+                }
+            }
+
+            // if field exists, convert it to a more friendly format
+            switch ($associationMapping['type']) {
+                case ClassMetadata::ONE_TO_ONE:
+                    $transformedField = $this->transformOneToOneMapping($associationMapping);
+                    break;
+
+                case ClassMetadata::ONE_TO_MANY:
+                    $transformedField = $this->transformOneToManyMapping($associationMapping);
+                    break;
+
+                case ClassMetadata::MANY_TO_ONE:
+                    $transformedField = $this->transformManyToOneMapping($associationMapping);
+                    break;
+
+                case ClassMetadata::MANY_TO_MANY:
+                    $transformedField = $this->transformManyToManyMapping($associationMapping);
+                    break;
+
+                default:
+                    throw new \Exception('Unhandled relationship type: '.$associationMapping['type']);
+            }
+
+            $transformedConfiguration['fields'][$fieldIndex] =  $transformedField;
+        }
 
         return $transformedConfiguration;
     }
@@ -30,78 +71,64 @@ class NgAdminWithRelationshipsTransformer implements TransformerInterface
         throw new \DomainException("You shouldn't have to remove relationships from a ng-admin configuration.");
     }
 
-    private function addForeignKeyFieldToReferencedFields($configuration)
+    private function getFieldIndex(array $fields, $fieldName)
     {
-        $referenceFields = array_filter($configuration['fields'], function($field) {
-            return in_array($field['type'], ['referenced_list', 'reference_many']);
-        });
-
-        if (!count($referenceFields)) {
-            return $configuration;
-        }
-
-        $transformedConfiguration = $configuration;
-        foreach ($referenceFields as $index => $referenceField) {
-            // if referenced field already found with JMS serializer, just skip it.
-            if ($referenceField['referencedField']) {
-                continue;
-            }
-
-            if ($referenceField['type'] === 'referenced_list') {
-                $targetEntity = $configuration['class'];
-                $sourceEntity = $referenceField['referencedEntity']['class'];
-            }
-
-            $referenceMetadata = $this->metadataFactory->getMetadataFor($referenceField['referencedEntity']['class']);
-            foreach ($referenceMetadata->associationMappings as $mapping) {
-                if ($mapping['sourceEntity'] !== $sourceEntity && $mapping['targetEntity'] !== $targetEntity) {
-                    continue;
-                }
-
-                if ($referenceField['type'] === 'referenced_list') {
-                    $transformedConfiguration['fields'][$index]['referencedField'] = $mapping['targetToSourceKeyColumns']['id'];
-                }
+        foreach($fields as $index => $field) {
+            if ($field['name'] === $fieldName) {
+                return $index;
             }
         }
-
-        return $transformedConfiguration;
     }
 
-    /**
-     * Turns foreign key columns into Reference field instead of simple "number" one.
-     */
-    private function transformReferenceRelationships($configuration)
+    private function transformOneToOneMapping($associationMapping)
     {
-        $associationMappings = $this->metadataFactory->getMetadataFor($configuration['class'])->associationMappings;
-        if (!count($associationMappings)) {
-            return $configuration;
-        }
+        return [
+            'name' => $associationMapping['fieldName'],
+            'type' => 'reference',
+            'referencedEntity' => [
+                'name' => $associationMapping['fieldName'],
+                'class' => $associationMapping['targetEntity']
+            ],
+            'referencedField' => $this->referencedFieldGuesser->guess($associationMapping['targetEntity'])
+        ];
+    }
 
-        $transformedConfiguration = $configuration;
-        foreach ($configuration['fields'] as $fieldIndex => $field) {
-            $matchingAssociation = array_filter($associationMappings, function($association) use($field) {
-                return isset($association['joinColumns']) && $association['joinColumns'][0]['name'] === $field['name'];
-            });
+    private function transformOneToManyMapping($associationMapping)
+    {
+        return [
+            'name' => $associationMapping['fieldName'],
+            'type' => 'referenced_list',
+            'referencedEntity' => [
+                'name' => Inflector::pluralize($associationMapping['fieldName']),
+                'class' => $associationMapping['targetEntity']
+            ],
+            'referencedField' => $this->referencedFieldGuesser->guessTargetReferenceField($associationMapping['sourceEntity'])
+        ];
+    }
 
-            if (!count($matchingAssociation)) {
-                continue;
-            }
+    private function transformManyToOneMapping($associationMapping)
+    {
+        return [
+            'name' => $associationMapping['fieldName'],
+            'type' => 'reference',
+            'referencedEntity' => [
+                'name' => Inflector::pluralize($associationMapping['fieldName']),
+                'class' => $associationMapping['targetEntity']
+            ],
+            'referencedField' => $this->referencedFieldGuesser->guess($associationMapping['targetEntity'])
+        ];
+    }
 
-            $matchingAssociation = current($matchingAssociation);
-
-            $transformedField = [
-                'name' => $field['name'],
-                'type' => 'reference',
-                'referencedEntity' => [
-                    'name' => Inflector::pluralize($matchingAssociation['fieldName']),
-                    'class' => $matchingAssociation['targetEntity'],
-                ],
-                'referencedField' => $this->referencedFieldGuesser->guess($matchingAssociation['targetEntity']),
-            ];
-
-            $transformedConfiguration['fields'][$fieldIndex] = $transformedField;
-        }
-
-        return $transformedConfiguration;
+    private function transformManyToManyMapping($associationMapping)
+    {
+        return [
+            'name' => $associationMapping['fieldName'],
+            'type' => 'reference_many',
+            'referencedEntity' => [
+                'name' => Inflector::pluralize($associationMapping['fieldName']),
+                'class' => $associationMapping['targetEntity']
+            ],
+            'referencedField' => $this->referencedFieldGuesser->guess($associationMapping['targetEntity'])
+        ];
     }
 }
