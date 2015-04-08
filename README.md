@@ -1,4 +1,4 @@
-NgAdminGeneratorBundle [![Build Status](https://magnum.travis-ci.com/marmelab/NgAdminGeneratorBundle.svg?token=9pHQqqGqKzq39Gzb6stP&branch=master)](https://magnum.travis-ci.com/marmelab/NgAdminGeneratorBundle)
+NgAdminGeneratorBundle [![Build Status](https://travis-ci.org/marmelab/NgAdminGeneratorBundle.svg?branch=master)](https://travis-ci.org/marmelab/NgAdminGeneratorBundle)
 ======================
 
 You're a fan of [StanLemonRestBundle](https://github.com/stanlemon/rest-bundle) because it makes REST APIs based on Doctrine entities a piece of cake?
