@@ -52,9 +52,11 @@ class ClassNameToNgAdminConfigurationTransformer implements TransformerInterface
                 return ['type' => 'number'];
 
             case 'string':
+                if (in_array($field->reflection->name, ['body', 'content'])) {
+                    return ['type' => 'wysiwyg'];
+                }
+
                 if (in_array($field->reflection->name, [
-                    'body',
-                    'content',
                     'details',
                 ])) {
                     return ['type' => 'text'];
