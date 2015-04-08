@@ -75,8 +75,8 @@ class ClassNameToNgAdminConfigurationTransformerTest extends \PHPUnit_Framework_
         return [
             ['title', 'string'],
             ['name', 'string'],
-            ['body', 'text'],
-            ['content', 'text'],
+            ['body', 'wysiwyg'],
+            ['content', 'wysiwyg'],
             ['details', 'text'],
         ];
     }

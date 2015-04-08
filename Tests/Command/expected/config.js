@@ -58,14 +58,14 @@
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('title'),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg').stripTags(true),
                 ]);
 
             posts.listView()
                 .fields([
                     nga.field('id', 'number'),
                     nga.field('title'),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg').stripTags(true),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
@@ -75,7 +75,7 @@
             posts.creationView()
                 .fields([
                     nga.field('title'),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
@@ -87,13 +87,13 @@
                         .editable(false)
                         .isDetailLink(false),
                     nga.field('title'),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg'),
                     nga.field('comments', 'referenced_list')
                         .targetEntity(nga.entity('comments'))
                         .targetReferenceField('post_id')
                         .targetFields([
                             nga.field('id', 'number'),
-                            nga.field('body', 'text'),
+                            nga.field('body', 'wysiwyg').stripTags(true),
 
                     ]),
                     nga.field('tags', 'reference_many')
@@ -106,13 +106,13 @@
                     nga.field('id', 'number')
                         .isDetailLink(false),
                     nga.field('title'),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg'),
                     nga.field('comments', 'referenced_list')
                         .targetEntity(nga.entity('comments'))
                         .targetReferenceField('post_id')
                         .targetFields([
                             nga.field('id', 'number'),
-                            nga.field('body', 'text'),
+                            nga.field('body', 'wysiwyg').stripTags(true),
 
                     ]),
                     nga.field('tags', 'reference_many')
@@ -145,7 +145,7 @@
                 .limit(5)
                 .fields([
                     nga.field('id', 'number'),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg').stripTags(true),
                     nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
@@ -154,7 +154,7 @@
             comments.listView()
                 .fields([
                     nga.field('id', 'number'),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg').stripTags(true),
                     nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
@@ -163,7 +163,7 @@
 
             comments.creationView()
                 .fields([
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg'),
                     nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
@@ -174,7 +174,7 @@
                     nga.field('id', 'number')
                         .editable(false)
                         .isDetailLink(false),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg'),
                     nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),
@@ -184,7 +184,7 @@
                 .fields([
                     nga.field('id', 'number')
                         .isDetailLink(false),
-                    nga.field('body', 'text'),
+                    nga.field('body', 'wysiwyg'),
                     nga.field('post', 'reference')
                         .targetEntity(nga.entity('posts'))
                         .targetField(nga.field('title')),

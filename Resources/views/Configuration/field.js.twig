@@ -1,4 +1,8 @@
         nga.field('{{ field.name }}'{% if field.type != 'string' %}, '{{ field.type }}'{% endif %})
+        {%- if field.type == 'wysiwyg' and (fromReference|default(false) or view == 'list' or view == 'dashboard')  -%}
+            .stripTags(true)
+        {% endif %}
+
 {% if not fromReference|default(false) and field.name == 'id' -%}
     {% if view == 'edition' %}                        .editable(false)
 {% endif %}
