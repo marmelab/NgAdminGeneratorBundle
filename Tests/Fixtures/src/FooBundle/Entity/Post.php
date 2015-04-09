@@ -11,6 +11,7 @@ class Post
     protected $title;
     protected $body;
     protected $comments;
+    protected $metadata;
 
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection|\FooBundle\Entity\Tag[]

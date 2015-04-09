@@ -1,0 +1,14 @@
+FooBundle\Entity\Metadata:
+    type: entity
+    table: null
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        source:
+            type: string
+            length: 255
+            nullable: false
