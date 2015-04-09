@@ -7,6 +7,8 @@ Then, you will love NgAdminGeneratorBundle, the Symfony2 bundle that  bootstraps
 
 ## Installation
 
+### Setting up bundle
+
 Using this bundle in your own project is pretty straightforward, thanks to composer:
 
 `composer require marmelab/ng-admin-generator-bundle`
@@ -28,6 +30,29 @@ class AppKernel extends Kernel
 ```
 
 No more configuration, you are now ready to go!
+
+### ng-admin template sample
+
+Here is a Twig template to render your favorite administration panel:
+
+``` xml
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Administration Panel</title>
+    <link rel="stylesheet" href="{{ asset('components/ng-admin/build/ng-admin.min.css') }}"/>
+</head>
+<body ng-app="myApp">
+    <script src="{{ asset('components/angular/angular.min.js') }}"></script>
+    <script src="{{ asset('components/ng-admin/build/ng-admin.min.js') }}"></script>
+    <script src="{{ asset('ngadmin.conf.js') }}"></script>
+    <div ui-view></div>
+</body>
+</html>
+```
+
+If you got a blank page, ensure you have set correctly the `ng-app` and `ui-view` attributes.
 
 ## Generating your ng-admin configuration
 
@@ -179,62 +204,6 @@ app.config(function(NgAdminConfigurationProvider, PostAdminProvider, CommentAdmi
     NgAdminConfigurationProvider.configure(admin);
 });
 ```
-
-## Known (current) limitations
-
-This is an early release of our bundle. There are currently some known limitations, especially regarding relationships.
-
-### One-to-many relationships
-
-Your API should return only the id of referenced entity, not an object. For instance, an API like the following would
-produce an error:
-
-``` json
-{
-    "first_name": "John",
-    "last_name": "Doe",
-    "address": {
-        "id": 1,
-        "address": "88 Colin P Kelly Jr Street",
-        "city": "San Francisco"
-    }
-}
-```
-
-You should instead return only an `address_id` field:
-
-``` json
-{
-    "first_name": "John",
-    "last_name": "Doe",
-    "address_id": 1
-}
-```
-
-This is easily done using the following `Serializer` annotations:
-
-``` php
-/**
- * @ORM\Column(name="address_id", type="integer", nullable=false)
- */
-protected $address_id;
-
-/**
- * @ORM\ManyToOne(targetEntity="Acme\FooBundle\Entity\Address")
- * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
- * @Serializer\Exclude()
- **/
-private $address;
-```
-
-This issue should be solved in the next weeks using [Restangular entity transformers]
-(https://github.com/marmelab/ng-admin/blob/master/doc/API-mapping.md#entry-format) in order to match automatically the
-id field of given object.
-
-### Many-to-many relationships
-
-Many-to-many support is currently not well supported. We are prioritizing our efforts to make it fully functional out
-of the box.
 
 ## Contributing
 
