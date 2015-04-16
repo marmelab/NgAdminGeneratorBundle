@@ -26,7 +26,9 @@ class ConfigurationGenerator
 
         foreach ($this->transformers as $transformer) {
             $inputData = count($transformedData) ? $transformedData: $objectDefinitions;
-
+            if (empty($inputData)) {
+                throw new \RuntimeException("No entity available for generation.");
+            }
             $transformedData = [];
             foreach ($inputData as $input) {
                 $transformedData[] = $transformer->transform($input);
