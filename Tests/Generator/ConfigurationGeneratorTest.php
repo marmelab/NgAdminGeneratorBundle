@@ -14,7 +14,7 @@ class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateConfigurationWithObjectDefinitionsEmpty()
     {
-        $this->setExpectedException('\RuntimeException');
+        $this->setExpectedException('\RuntimeException', 'No entity available for generation.');
 
         $em   = $this->getEntityManagerMock();
         $twig = $this->getTwigMock();
@@ -23,14 +23,14 @@ class ConfigurationGeneratorTest extends \PHPUnit_Framework_TestCase
         $ngAdminWithRelationshipsTransformer        = $this->getNgAdminWithRelationshipsTransformerMock();
         $entityToEntityWithIconTransformer          = $this->getEntityToEntityWithIconTransformerMock();
 
-        $this->transformers = array(
+        $transformers = array(
             $classNameToNgAdminConfigurationTransformer,
             $ngAdminWithRelationshipsTransformer,
             $entityToEntityWithIconTransformer
         );
 
         $configurationGenerator = new ConfigurationGenerator(
-            $this->transformers,
+            $transformers,
             $this->getEntityManagerMock(),
             $this->getTwigMock()
         );
