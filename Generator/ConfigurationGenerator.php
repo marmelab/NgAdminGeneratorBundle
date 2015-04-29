@@ -22,6 +22,10 @@ class ConfigurationGenerator
 
     public function generateConfiguration(array $objectDefinitions)
     {
+        if (empty($objectDefinitions)) {
+            throw new \RuntimeException("No entity available for generation.");
+        }
+
         $transformedData = [];
 
         foreach ($this->transformers as $transformer) {
