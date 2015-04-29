@@ -23,3 +23,4 @@ lemon_rest:
         - { name: posts, class: FooBundle\Entity\Post }
         - { name: comments, class: FooBundle\Entity\Comment }
         - { name: tags, class: FooBundle\Entity\Tag }
+        - { name: metadata, class: FooBundle\Entity\Metadata }

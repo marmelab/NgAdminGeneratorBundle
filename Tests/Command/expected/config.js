@@ -40,6 +40,10 @@
             var posts = nga.entity('posts');
 
             RestangularProvider.addElementTransformer('posts', function(element) {
+                if (element.metadata) {
+                    element.metadata = element.metadata.id;
+                }
+
                 if (element.tags) {
                     element.tags = element.tags.map(function(item) {
                         return item.id;
@@ -66,6 +70,9 @@
                     nga.field('id', 'number'),
                     nga.field('title'),
                     nga.field('body', 'wysiwyg').stripTags(true),
+                    nga.field('metadata', 'reference')
+                        .targetEntity(nga.entity('metadata'))
+                        .targetField(nga.field('id')),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
@@ -76,6 +83,9 @@
                 .fields([
                     nga.field('title'),
                     nga.field('body', 'wysiwyg'),
+                    nga.field('metadata', 'reference')
+                        .targetEntity(nga.entity('metadata'))
+                        .targetField(nga.field('id')),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
@@ -96,6 +106,9 @@
                             nga.field('body', 'wysiwyg').stripTags(true),
 
                     ]),
+                    nga.field('metadata', 'reference')
+                        .targetEntity(nga.entity('metadata'))
+                        .targetField(nga.field('id')),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
@@ -115,6 +128,9 @@
                             nga.field('body', 'wysiwyg').stripTags(true),
 
                     ]),
+                    nga.field('metadata', 'reference')
+                        .targetEntity(nga.entity('metadata'))
+                        .targetField(nga.field('id')),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
