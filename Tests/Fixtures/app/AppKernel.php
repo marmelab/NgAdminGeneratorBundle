@@ -11,7 +11,6 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
-            new Symfony\Bundle\MonologBundle\MonologBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Lemon\RestBundle\LemonRestBundle(),
             new marmelab\NgAdminGeneratorBundle\marmelabNgAdminGeneratorBundle(),
