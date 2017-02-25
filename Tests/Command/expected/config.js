@@ -69,6 +69,9 @@
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
+                    nga.field('category', 'reference')
+                        .targetEntity(nga.entity('category')
+                        .targetField(nga.field('name')),
                 ])
                 .listActions(['show', 'edit', 'delete']);
 
@@ -78,6 +81,9 @@
                     nga.field('body', 'wysiwyg'),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
+                        .targetField(nga.field('name')),
+                    nga.field('category', 'reference')
+                        .targetEntity(nga.entity('category')
                         .targetField(nga.field('name')),
                 ]);
 
@@ -99,6 +105,9 @@
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
                         .targetField(nga.field('name')),
+                    nga.field('category', 'reference')
+                        .targetEntity(nga.entity('category')
+                        .targetField(nga.field('name')),
                 ]);
 
             posts.showView()
@@ -117,6 +126,9 @@
                     ]),
                     nga.field('tags', 'reference_many')
                         .targetEntity(nga.entity('tags'))
+                        .targetField(nga.field('name')),
+                    nga.field('category', 'reference')
+                        .targetEntity(nga.entity('category')
                         .targetField(nga.field('name')),
                 ]);
 
